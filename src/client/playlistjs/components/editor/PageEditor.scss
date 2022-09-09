@@ -1,0 +1,29 @@
+.page-editor {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+
+    .playlistjs-editor {
+        flex-basis: 800px;
+        flex-grow: 1;
+    }
+}
+
+.editor-sidebar {
+    flex-basis: 150px;
+    flex-shrink: 1;
+    background-color: var(--bg-600);
+    border-right: 1px solid var(--bg-900);
+}
+
+.editor-files {
+    flex-basis: 250px;
+    background-color: var(--bg-500);
+    border-right: 1px solid var(--bg-900);
+}
+
+.editor-terminal {
+    flex-basis: 350px;
+    flex-shrink: 2;
+    background-color: var(--bg-300);
+}

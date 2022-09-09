@@ -1,0 +1,21 @@
+@mixin theme($base, $h, $s, $l, $hue-shift: 0, $sat-shift: 4, $lshift: 3) {
+    @for $i from -4 through 4 {
+        --#{$base}-#{$i * 100 + 500}: hsl(#{$h + $hue-shift * $i}, #{$s + $sat-shift * $i}#{'%'}, #{$l + $lshift * $i}#{'%'});
+    }
+}
+
+:root {
+    color-scheme: dark;
+    @include theme(bg, 210, 10, 15, $hue-shift: 1, $sat-shift: 1)
+}
+
+body {
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+#root {
+    height: 100%;
+    overflow: hidden;
+}
