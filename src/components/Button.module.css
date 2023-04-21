@@ -1,0 +1,18 @@
+.button {
+    border: none;
+    padding: 0.4em 1.25em calc(0.4em + 1px) 1.25em;
+    border-radius: 4px;
+    font-family: 'Inter';
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.primary {
+    color: var(--background-root);
+    background-color: var(--accent-green-strongest);
+}
+
+.secondary {
+    color: var(--background-root);
+    background-color: white;
+}

@@ -1,0 +1,65 @@
+.file, .note {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+    word-break: break-all;
+}
+
+.file:hover {
+    background-color: var(--background-higher);
+}
+
+.note:hover {
+    outline: 1px solid var(--accent-primary-default);
+    border-color: transparent;
+}
+
+.file {
+    font-size: 15px;
+    padding: 4px 6px;
+    background-color: var(--background-default);
+    border-radius: 3px;
+}
+
+.file .fileName {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.note {
+    font-size: 14px;
+    padding: 2px 6px 0 6px;
+    background-color: var(--background-root);
+    border-bottom: 1px solid var(--outline-default);
+    font-family: 'Architects Daughter', sans-serif;
+}
+
+.file > * {
+    flex-shrink: 0;
+}
+
+.fileHandle {
+    padding-top: 3px;
+}
+
+.fileName {
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding-bottom: 3px;
+}
+
+.fileAction {
+    flex-shrink: 0;
+}
+
+.closer {
+    border-bottom: 1px solid var(--outline-stronger);
+}
+
+.fileNameEditInput {
+    width: 100%;
+}

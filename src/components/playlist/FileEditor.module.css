@@ -1,0 +1,13 @@
+.container {
+    grid-area: editor;
+    background-color: var(--background-root);
+}
+
+.noFile {
+    color: var(--foreground-dimmest);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Manrope';
+    font-size: x-large;
+}

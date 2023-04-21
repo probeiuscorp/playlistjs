@@ -1,0 +1,10 @@
+.input {
+    font-size: large;
+    border-bottom: 1px solid var(--outline-strongest);
+    padding-bottom: 2px;
+    margin-bottom: 4px;
+}
+
+.input:focus {
+    border-color: var(--accent-blue-strongest);
+}

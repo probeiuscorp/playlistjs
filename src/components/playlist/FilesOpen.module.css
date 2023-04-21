@@ -1,0 +1,9 @@
+.container {
+    grid-area: open;
+    padding: 0 12px;
+    background-color: var(--black);
+    border-bottom: 1px solid var(--outline-dimmer);
+    
+    display: flex;
+    align-items: center;
+}
