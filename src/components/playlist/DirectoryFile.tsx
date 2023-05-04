@@ -20,7 +20,6 @@ export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
     const deleteFile = useAction(playlist.deleteFile);
 
     const handleKeyUp: React.KeyboardEventHandler = e => {
-        // console.log(handleKey);
         if(e.key === 'Delete') {
             deleteFile(id);
         } else if(e.key === 'Enter') {

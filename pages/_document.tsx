@@ -10,7 +10,7 @@ export default function PlaylistJS() {
                 <link href="http://fonts.cdnfonts.com/css/gt-pressura-mono" rel="stylesheet"/>
                 <link rel="preconnect" href="https://fonts.googleapis.com"/>
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
-                <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Inter&family=Manrope:wght@600&display=swap" rel="stylesheet"/>
+                <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Inter&family=Manrope:wght@600&display=swap" rel="stylesheet"/>
             </Head>
             <body>
                 <Main/>

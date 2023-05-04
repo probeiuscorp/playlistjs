@@ -2,9 +2,9 @@ import { atom } from 'jotai/vanilla';
 import { atomFamily } from 'jotai/vanilla/utils';
 import { action, normalizedMap, out } from ':/util';
 import { nanoid } from 'nanoid';
+import { FileKind, PlaylistDirectory } from ':/models/Playlists';
 
 export type ID = string;
-export type FileKind = 'file' | 'note';
 export type FileInfo = {
     id: ID,
     name: string,
@@ -20,19 +20,23 @@ type FileFactory = {
     name: string,
     kind: FileKind,
 }
-const filesFamily = normalizedMap((id, { kind, name }: FileFactory) => {
+const filesFamily = normalizedMap((id: string, { kind, name }: FileFactory) => {
     const nameAtom = atom(name);
     
     return atom({
         id,
         kind,
         name: nameAtom,
+        path: atom(get => {
+            const name = get(nameAtom);
+            return './' + name;
+        }),
         full: atom(get => {
             const name = get(nameAtom);
-            const suffix = kind === 'file'
+            const extension = kind === 'file'
                 ? '.ts'
                 : '.md';
-            return name + suffix;
+            return name + extension;
         })
     });
 });
@@ -86,6 +90,38 @@ const closeFile = action((get, set, id: ID) => {
     }
 });
 
+const serialize = action((get): PlaylistDirectory => {
+    const ids = get(directoryAtom);
+    
+    return ids.map((id) => {
+        const file = get(filesFamily(id));
+        const kind = file.kind;
+        const path = get(file.path);
+        const content = get(contentFamily(id));
+        const isEntry = path === './main';
+
+        return {
+            id,
+            kind,
+            path,
+            content,
+            isEntry,
+        };
+    });
+});
+
+const deserialize = action((get, set, directory: PlaylistDirectory) => {
+    for(const file of directory) {
+        const name = file.path.slice(2);
+        filesFamily.add(file.id, {
+            name,
+            kind: file.kind,
+        });
+        set(directoryAtom, directory => [...directory, file.id]);
+        set(contentFamily(file.id), file.content);
+    }
+});
+
 export const playlist = {
     open: openAtom,
     directory: directoryAtom,
@@ -95,5 +131,7 @@ export const playlist = {
     openFile,
     closeFile,
     addFile,
-    deleteFile
+    deleteFile,
+    serialize,
+    deserialize,
 };

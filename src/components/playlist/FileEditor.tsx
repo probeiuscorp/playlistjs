@@ -1,6 +1,6 @@
 import { merge } from ':/util';
 import Editor from '@monaco-editor/react';
-import { useAtomValue } from 'jotai/react';
+import { useAtom, useAtomValue } from 'jotai/react';
 import React from 'react';
 import { playlist } from ':/state/playlist';
 import styles from './FileEditor.module.css';
@@ -32,17 +32,18 @@ type FileEditorCodeProps = {
 };
 function FileEditorCode({ file }: FileEditorCodeProps) {
     const info = useAtomValue(playlist.files(file));
-    const value = useAtomValue(playlist.content(file));
+    const [value, setValue] = useAtom(playlist.content(file));
     const full = useAtomValue(info.full);
 
     return (
         <Editor
             theme="vs-dark"
             path={full}
-            defaultValue={value}
+            value={value}
             defaultLanguage={info.kind === 'file' ? 'typescript' : 'markdown'}
             options={{ fontSize: 16, padding: { top: 8 }}}
             beforeMount={handleEditorWillMount}
+            onChange={e => e && setValue(e)}
         />
     );
 }

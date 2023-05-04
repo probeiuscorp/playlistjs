@@ -1,10 +1,13 @@
 .file, .note {
+    font-size: 15px;
+    padding: 4px 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 6px;
     margin-bottom: 5px;
     word-break: break-all;
+    border-radius: 3px;
 }
 
 .file:hover {
@@ -12,15 +15,12 @@
 }
 
 .note:hover {
-    outline: 1px solid var(--accent-primary-default);
-    border-color: transparent;
+    background-color: var(--background-default);
+    border-color: var(--outline-strongest);
 }
 
 .file {
-    font-size: 15px;
-    padding: 4px 6px;
     background-color: var(--background-default);
-    border-radius: 3px;
 }
 
 .file .fileName {
@@ -30,11 +30,9 @@
 }
 
 .note {
-    font-size: 14px;
-    padding: 2px 6px 0 6px;
     background-color: var(--background-root);
     border-bottom: 1px solid var(--outline-default);
-    font-family: 'Architects Daughter', sans-serif;
+    font-family: 'Patrick Hand', sans-serif;
 }
 
 .file > * {

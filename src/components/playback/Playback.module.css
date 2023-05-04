@@ -1,0 +1,54 @@
+.container {
+    background-color: var(--background-root);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+}
+
+.nowPlaying {
+    flex-grow: 3;
+}
+
+.upNext {
+    flex-grow: 2;
+}
+
+.nowPlaying, .upNext {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0.5em;
+    gap: 0.5em;
+}
+
+.videoDescription {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-size: x-large;
+}
+
+.subtitle {
+    align-self: flex-end;
+    color: var(--foreground-dimmest);
+}
+
+.upNextLabel {
+    font-size: smaller;
+    align-self: center;
+}
+
+.video {
+    aspect-ratio: 16 / 9;
+    flex-grow: 1;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--background-higher);
+    border-radius: 3px;
+}
