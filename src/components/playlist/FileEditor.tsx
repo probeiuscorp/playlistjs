@@ -2,7 +2,7 @@ import { action, merge, useAction } from ':/util';
 import Editor from '@monaco-editor/react';
 import { type editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAtom, useAtomValue } from 'jotai/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { playlist } from ':/state/playlist';
 import styles from './FileEditor.module.css';
 // @ts-ignore
@@ -11,17 +11,31 @@ import { wireTmGrammars } from 'monaco-editor-textmate';
 import { Registry } from 'monaco-textmate';
 import { loadWASM } from 'onigasm';
 import theme from 'public/theme.json';
+import { atom } from 'jotai/vanilla';
 
 type Editor = editor.IStandaloneCodeEditor;
 type Monaco = typeof import('/home/caleb/playlistjs/node_modules/monaco-editor/esm/vs/editor/editor.api');
 
+const loadingGrammarCacheAtom = atom<Promise<string> | null>(null);
+const actionLoadGrammar = action((get, set) => {
+    const cache = get(loadingGrammarCacheAtom);
+    if(cache) {
+        return cache;
+    } else {
+        const loader = fetch('/typescript.tmLanguage').then(res => res.text());
+        set(loadingGrammarCacheAtom, loader);
+        return loader;
+    }
+});
+
 // Adapted from https://github.com/zikaari/monaco-editor-textmate
 const actionLoadTextMate = action(async (get, set, editor: Editor, monaco: Monaco) => {
+    const loadingGrammar = set(actionLoadGrammar);
     await loadWASM('/onigasm.wasm');
 
     const registry = new Registry({
         async getGrammarDefinition() {
-            const content = await fetch('/typescript.tmLanguage').then(res => res.text());
+            const content = await loadingGrammar;
             return {
                 content,
                 format: 'plist',
@@ -58,7 +72,13 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
 });
 
 export function FileEditor() {
-    const file = useAtomValue(playlist.activeFile);
+    const file = useAtomValue(playlist.activeFile) ?? 'e-qrRPN2xwoA53psm1iRf';
+    const loadGrammar = useAction(actionLoadGrammar);
+
+    useEffect(() => {
+        // preload loaders
+        loadGrammar();
+    }, []);
 
     return (
         file === null
