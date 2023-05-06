@@ -13,7 +13,6 @@
         ".next": true
     },
     "files.associations": {
-        "*.ts.txt": "typescript",
-        "*.js.txt": "javascript"
+        "std.ts.txt": "typescript"
     }
 }

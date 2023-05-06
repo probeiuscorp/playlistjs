@@ -1,0 +1,47 @@
+/// <reference no-default-lib="true"/>
+/// <reference lib="es6"/>
+
+/* eslint no-redeclare: 0 */
+/* eslint @typescript-eslint/no-namespace: 0 */
+/* eslint @typescript-eslint/no-unused-vars: 0 */
+
+/**
+ * @internal
+ */
+declare function $$submit(data: string): void;
+
+function chance(decimal: number) {
+    return Math.random() < decimal;
+}
+
+type Playlist = string[];
+const Playlist: {
+    yield(playlist: Playlist): void
+    yield(name: string, playlist: Playlist): void
+
+    readonly input: {
+        string(label: string): string
+        number(label: string): number
+        boolean(label: boolean): boolean
+        options<T>(options: [string, T][]): T
+    }
+} = {
+    yield(a: Playlist | string, b?: Playlist) {
+        let name: string;
+        let playlist: Playlist;
+        if(Array.isArray(b) && typeof a === 'string') {
+            name = a;
+            playlist = b;
+        } else if(Array.isArray(a)) {
+            name = 'Unnamed yield';
+            playlist = a;
+        } else throw new TypeError();
+    
+        $$submit(name + '\0' + playlist.join('\0'));
+    },
+    input: {
+        number() {
+
+        }
+    },
+};

@@ -1,5 +1,0 @@
-const Playlist = {
-    yield(name, playlist) {
-        $$submit(name + '\0' + playlist.join('\0'));
-    }
-};
