@@ -9,7 +9,11 @@ export type PlaylistFile = {
     content: string
     isEntry: boolean
 };
-export type PlaylistDirectory = PlaylistFile[];
+export type PlaylistDirectory = {
+    files: PlaylistFile[]
+    openFiles: string[]
+    open?: string
+};
 export type Playlist = {
     id: string
     directory: PlaylistDirectory
@@ -21,39 +25,57 @@ export const isPlaylist = compile<Playlist>({
             type: 'string',
         },
         directory: {
-            type: 'array',
-            items: {
-                type: 'object',
-                properties: {
-                    id: {
-                        type: 'string',
+            type: 'object',
+            properties: {
+                files: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            id: {
+                                type: 'string',
+                            },
+                            kind: {
+                                enum: ['file', 'note'],
+                            },
+                            path: {
+                                type: 'string',
+                            },
+                            content: {
+                                type: 'string',
+                            },
+                            isEntry: {
+                                type: 'boolean',
+                            }
+                        },
+                        required: [
+                            'id',
+                            'kind',
+                            'path',
+                            'content',
+                            'isEntry',
+                        ],
                     },
-                    kind: {
-                        enum: ['file', 'note'],
-                    },
-                    path: {
-                        type: 'string',
-                    },
-                    content: {
-                        type: 'string',
-                    },
-                    isEntry: {
-                        type: 'boolean',
-                    }
                 },
-                required: [
-                    'id',
-                    'kind',
-                    'path',
-                    'content',
-                    'isEntry',
-                ],
-            }
+                openFiles: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                },
+                open: {
+                    type: 'string',
+                },
+            },
+            required: [
+                'files',
+                'openFiles',
+            ],
         },
     },
     required: [
         'id',
-        'directory',
+        'directory'
     ],
 });
 

@@ -1,6 +1,8 @@
 /// <reference no-default-lib="true"/>
 /// <reference lib="es6"/>
 
+import { split, rehead, mapsort } from './testable';
+
 /* eslint no-redeclare: 0 */
 /* eslint @typescript-eslint/no-namespace: 0 */
 /* eslint @typescript-eslint/no-unused-vars: 0 */
@@ -10,9 +12,9 @@
  */
 declare function $$submit(data: string): void;
 
-function chance(decimal: number) {
+const chance = (decimal: number) => {
     return Math.random() < decimal;
-}
+};
 
 type Playlist = string[];
 const Playlist: {
@@ -44,4 +46,93 @@ const Playlist: {
 
         }
     },
+};
+
+interface Array<T> {
+    /**
+     * Pure Fisher-Yates Knuth shuffle (not in-place).
+     */
+    shuffle(): T[]
+
+    /**
+     * Splits the array at @param index, leaving the item at `index` in the second array.
+     * 
+     * @example
+     * ```javascript
+     * [0, 1, 2].split(1) // => [ [0], [1, 2] ]
+     * ```
+     */
+    split(index: number): [T[], T[]]
+
+    /**
+     * Moves everything before @param index to the back of the array.
+     * 
+     * @example
+     * ```javascript
+     * [0,1,2,3].rehead(2) // => [2,3,0,1]
+     * ```
+     */
+    rehead(index: number): T[]
+
+    /**
+     * More useful `sort()`, enabling stuff like:
+     * 
+     * @example
+     * ```javascript
+     * // Shuffle array, but move each item no more than 2 spaces
+     * [0,1,2,3].mapsort(
+     *    (item, index) => index + Math.random(-1, 1),
+     *    (a, b) => a - b
+     * )
+     * ```
+     */
+    mapsort<TTransformed>(
+        map: (item: T, index: number, array: T[]) => TTransformed,
+        compare?: (a: TTransformed, b: TTransformed) => number | boolean,
+    ): T[]
+}
+
+Array.prototype.shuffle = function(this: any[]) {
+    const copy = this.slice();
+    let currentIndex = this.length, randomIndex: number;
+    
+    while(currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [copy[currentIndex], copy[randomIndex]] = [copy[randomIndex], copy[currentIndex]];
+    }
+    
+    return copy;
+};
+
+Array.prototype.split = function(this: any[], index) {
+    return split(this, index);
+};
+
+Array.prototype.rehead = function(this: any[], index) {
+    return rehead(this, index);
+};
+
+Array.prototype.mapsort = function(this: any[], map, sort) {
+    return mapsort(this, map, sort);
+};
+
+interface Math {
+    random(max: number): number
+    random(min: number, max: number): number
+}
+
+/**
+ * @internal
+ */
+const $$oldMathRandom = Math.random;
+Math.random = (a?: number, b?: number) => {
+    const rand = $$oldMathRandom();
+    if(typeof a === 'number') {
+        if(typeof b === 'number') {
+            return rand * (b - a) + a;
+        }
+        return rand * a;
+    }
+    return rand;
 };

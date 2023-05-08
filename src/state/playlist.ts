@@ -91,27 +91,36 @@ const closeFile = action((get, set, id: ID) => {
 });
 
 const serialize = action((get): PlaylistDirectory => {
+    const open = get(activeFileAtom);
+    const openFiles = get(openAtom);
     const ids = get(directoryAtom);
     
-    return ids.map((id) => {
-        const file = get(filesFamily(id));
-        const kind = file.kind;
-        const path = get(file.path);
-        const content = get(contentFamily(id));
-        const isEntry = path === './main';
+    return {
+        openFiles,
+        open: open ?? undefined,
+        files: ids.map((id) => {
+            const file = get(filesFamily(id));
+            const kind = file.kind;
+            const path = get(file.path);
+            const content = get(contentFamily(id));
+            const isEntry = path === './main';
 
-        return {
-            id,
-            kind,
-            path,
-            content,
-            isEntry,
-        };
-    });
+            return {
+                id,
+                kind,
+                path,
+                content,
+                isEntry,
+            };
+        })
+    };
 });
 
-const deserialize = action((get, set, directory: PlaylistDirectory) => {
-    for(const file of directory) {
+const deserialize = action((get, set, { open, openFiles, files }: PlaylistDirectory) => {
+    set(activeFileAtom, open ?? null);
+    set(openAtom, openFiles);
+
+    for(const file of files) {
         const name = file.path.slice(2);
         filesFamily.add(file.id, {
             name,

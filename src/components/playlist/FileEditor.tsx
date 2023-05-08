@@ -12,6 +12,7 @@ import { Registry } from 'monaco-textmate';
 import { loadWASM } from 'onigasm';
 import theme from 'public/theme.json';
 import { atom } from 'jotai/vanilla';
+import { noop } from 'swr/_internal';
 
 type Editor = editor.IStandaloneCodeEditor;
 type Monaco = typeof import('/home/caleb/playlistjs/node_modules/monaco-editor/esm/vs/editor/editor.api');
@@ -31,7 +32,7 @@ const actionLoadGrammar = action((get, set) => {
 // Adapted from https://github.com/zikaari/monaco-editor-textmate
 const actionLoadTextMate = action(async (get, set, editor: Editor, monaco: Monaco) => {
     const loadingGrammar = set(actionLoadGrammar);
-    await loadWASM('/onigasm.wasm');
+    await loadWASM('/onigasm.wasm').catch(noop);
 
     const registry = new Registry({
         async getGrammarDefinition() {
@@ -72,7 +73,7 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
 });
 
 export function FileEditor() {
-    const file = useAtomValue(playlist.activeFile) ?? 'e-qrRPN2xwoA53psm1iRf';
+    const file = useAtomValue(playlist.activeFile);
     const loadGrammar = useAction(actionLoadGrammar);
 
     useEffect(() => {

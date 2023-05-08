@@ -4,8 +4,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "mocha -r tsx src/**/*.test.ts",
-    "build:theme": "tsx scripts/buildTheme/buildTheme.ts"
+    "test": "mocha -r tsx 'src/**/*.test.ts'",
+    "build:theme": "tsx scripts/buildTheme/buildTheme.ts",
+    "build:std": "tsx scripts/buildStd"
   },
   "dependencies": {
     "@ebay/nice-modal-react": "^1.2.9",
@@ -42,14 +43,17 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "18.11.18",
     "@types/react": "18.0.26",
+    "@types/uglify-js": "^3.17.1",
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
+    "chalk": "^5.2.0",
     "deepmerge": "^4.3.1",
     "eslint": "^8.31.0",
     "eslint-plugin-react": "^7.31.11",
     "mocha": "^10.2.0",
     "monaco-vscode-textmate-theme-converter": "^0.1.7",
-    "tsx": "^3.12.6",
-    "typescript": "4.9.4"
+    "tsx": "^3.12.7",
+    "typescript": "4.9.4",
+    "uglify-js": "^3.17.4"
   }
 }

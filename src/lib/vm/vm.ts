@@ -10,7 +10,7 @@ export type PlaylistYield = {
 }
 export type Executed = PlaylistYield[];
 
-export async function execute(playlist: Playlist) {
+export async function execute({ directory }: Playlist) {
     const yields: Executed = [];
     const isolate = new Isolate();
     const context = await isolate.createContext();
@@ -32,12 +32,12 @@ export async function execute(playlist: Playlist) {
     });
 
     const lookup = Object.fromEntries(
-        playlist.directory
+        directory.files
             .filter(file => file.kind === 'file')
             .map(file => [file.path, file.content])
     );
     const modules = await all(map(lookup, (content) => isolate.compileModule(content)));
-    const entries = playlist.directory.filter(file => file.isEntry).map(file => file.path);
+    const entries = directory.files.filter(file => file.isEntry).map(file => file.path);
     
     await createTransaction((add) => {
         for(const entry of entries) {
