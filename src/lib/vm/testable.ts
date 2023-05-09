@@ -1,3 +1,16 @@
+export function shuffle<T>(array: T[]): T[] {
+    const copy = array.slice();
+    let currentIndex = copy.length, randomIndex: number;
+    
+    while(currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [copy[currentIndex], copy[randomIndex]] = [copy[randomIndex], copy[currentIndex]];
+    }
+    
+    return copy;
+}
+
 export function split<T>(array: T[], index: number): [T[], T[]] {
     return [
         array.slice(0, index),
