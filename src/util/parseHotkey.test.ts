@@ -28,55 +28,55 @@ describe('parseHotkey()', () => {
         alt: false,
         ctrl: false,
         shift: false,
-        keys: ['s']
+        keys: ['s'],
     });
 
     test('[c|v]', {
         alt: false,
         ctrl: false,
         shift: false,
-        keys: ['c', 'v']
+        keys: ['c', 'v'],
     });
 
     test('ctrl + s', {
         alt: false,
         ctrl: true,
         shift: false,
-        keys: ['s']
+        keys: ['s'],
     });
 
     test('ctrl + shift + s', {
         alt: false,
         ctrl: true,
         shift: true,
-        keys: ['s']
+        keys: ['s'],
     });
 
     test('alt + ctrl + shift + s', {
         alt: true,
         ctrl: true,
         shift: true,
-        keys: ['s']
+        keys: ['s'],
     });
 
     test('ctrl? + shift + s', {
         alt: false,
         ctrl: null,
         shift: true,
-        keys: ['s']
+        keys: ['s'],
     });
     
     test('ctrl?+shift+s', {
         alt: false,
         ctrl: null,
         shift: true,
-        keys: ['s']
+        keys: ['s'],
     });
 
     test('ctrl?+shift + [a|s|d]', {
         alt: false,
         ctrl: null,
         shift: true,
-        keys: ['a', 's', 'd']
+        keys: ['a', 's', 'd'],
     });
 });

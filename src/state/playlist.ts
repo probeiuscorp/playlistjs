@@ -6,9 +6,9 @@ import { FileKind, PlaylistDirectory } from ':/models/Playlists';
 
 export type ID = string;
 export type FileInfo = {
-    id: ID,
-    name: string,
-    full: string,
+    id: ID
+    name: string
+    full: string
     kind: FileKind
 };
 
@@ -17,8 +17,8 @@ const directoryAtom = atom<ID[]>([]);
 const activeFileAtom = atom<ID | null>(null);
 
 type FileFactory = {
-    name: string,
-    kind: FileKind,
+    name: string
+    kind: FileKind
 }
 const filesFamily = normalizedMap((id: string, { kind, name }: FileFactory) => {
     const nameAtom = atom(name);
@@ -37,12 +37,12 @@ const filesFamily = normalizedMap((id: string, { kind, name }: FileFactory) => {
                 ? '.ts'
                 : '.md';
             return name + extension;
-        })
+        }),
     });
 });
 const contentFamily = atomFamily((id: ID | null) => atom(''));
 
-const addFile = action((get, set, { name, kind }: { name: string, kind: FileKind }) => {
+const addFile = action((get, set, { name, kind }: { name: string; kind: FileKind }) => {
     const id = nanoid();
     filesFamily.add(id, { name, kind });
     set(directoryAtom, old => [...old, id]);
@@ -112,7 +112,7 @@ const serialize = action((get): PlaylistDirectory => {
                 content,
                 isEntry,
             };
-        })
+        }),
     };
 });
 

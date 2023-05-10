@@ -2,7 +2,7 @@ import NiceModal, { useModal as useNiceModal } from '@ebay/nice-modal-react';
 import { MODAL_ANIMATE_OUT_TIME } from './Modal';
 
 export type ModalDefinition<TProps = any, TValue = any> = {
-    _props: TProps,
+    _props: TProps
     _value: TValue
 }
 export type ExtractModalProps<TModal extends ModalDefinition> = TModal extends ModalDefinition<infer TProps> ? TProps : never;
@@ -30,7 +30,7 @@ function createModal<TProps, TValue>(component: ModalComponent<ModalDefinition<T
                         modal.remove();
                     }, MODAL_ANIMATE_OUT_TIME);
                 },
-            }
+            },
         });
     });
 
@@ -48,5 +48,5 @@ function open(definition: any, props: any = {}) {
 
 export const Modals = {
     createModal,
-    open
+    open,
 };

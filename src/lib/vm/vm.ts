@@ -34,7 +34,7 @@ export async function execute({ directory }: Playlist) {
     const lookup = Object.fromEntries(
         directory.files
             .filter(file => file.kind === 'file')
-            .map(file => [file.path, file.content])
+            .map(file => [file.path, file.content]),
     );
     const modules = await all(map(lookup, (content) => isolate.compileModule(content)));
     const entries = directory.files.filter(file => file.isEntry).map(file => file.path);

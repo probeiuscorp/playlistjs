@@ -5,7 +5,7 @@ module.exports = {
     webpack: (config, { isServer }) => {
         config.module.rules.push({
             test: /\.txt$/,
-            loader: 'raw-loader'
+            loader: 'raw-loader',
         });
 
         if(isServer === false) {
@@ -22,5 +22,5 @@ module.exports = {
             );
         }
         return config;
-    }
+    },
 };

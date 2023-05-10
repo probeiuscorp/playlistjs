@@ -41,6 +41,31 @@
         "no-async-promise-executor": "off",
         "no-empty-pattern": "off",
         "react/prop-types": "off",
+        "comma-dangle": [
+            "warn",
+            "always-multiline"
+        ],
+        "@typescript-eslint/ban-types": [
+            "error",
+            {
+                "types": {
+                    // Because using Record<string, never> is not very ergonomical for prop types
+                    "{}": false
+                }
+            }
+        ],
+        "@typescript-eslint/consistent-type-definitions": [
+            "error",
+            "type"
+        ],
+        "@typescript-eslint/member-delimiter-style": [
+            "warn",
+            {
+                "multiline": {
+                    "delimiter": "none"
+                }
+            }
+        ],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-empty-interface": "off"

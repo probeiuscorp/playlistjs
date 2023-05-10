@@ -68,7 +68,7 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
     }
 
     monaco.languages.typescript.typescriptDefaults.setExtraLibs([
-        { content }
+        { content },
     ]);
 });
 
@@ -93,7 +93,7 @@ export function FileEditor() {
 }
 
 type FileEditorCodeProps = {
-    file: string,
+    file: string
 };
 function FileEditorCode({ file }: FileEditorCodeProps) {
     const info = useAtomValue(playlist.files(file));

@@ -26,7 +26,7 @@ export function rehead<T>(array: T[], index: number): T[] {
 export function mapsort<T, R>(
     array: T[],
     map: (item: T, index: number, array: T[]) => R,
-    compare?: (a: R, b: R) => number
+    compare?: (a: R, b: R) => number,
 ): T[] {
     let final: { original: any }[];
     const mapped = final = array.map((value, index, array) => ({

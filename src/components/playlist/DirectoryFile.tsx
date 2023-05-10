@@ -7,9 +7,9 @@ import { ID, playlist } from ':/state/playlist';
 import styles from './DirectoryFile.module.css';
 import { ModalChangeName } from './ModalChangeName';
 
-interface DirectoryFileProps {
-    id: ID,
-    props: any,
+type DirectoryFileProps = {
+    id: ID
+    props: any
     handle: any
 }
 

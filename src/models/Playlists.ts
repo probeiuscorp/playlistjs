@@ -46,7 +46,7 @@ export const isPlaylist = compile<Playlist>({
                             },
                             isEntry: {
                                 type: 'boolean',
-                            }
+                            },
                         },
                         required: [
                             'id',
@@ -75,7 +75,7 @@ export const isPlaylist = compile<Playlist>({
     },
     required: [
         'id',
-        'directory'
+        'directory',
     ],
 });
 
@@ -92,7 +92,7 @@ export async function getPlaylistById(id: string) {
 export async function updatePlaylist(playlist: Playlist) {
     const playlists = await pending;
     const result = await playlists.replaceOne({
-        id: playlist.id
+        id: playlist.id,
     }, playlist);
 
     return result.modifiedCount === 1;

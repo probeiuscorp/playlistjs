@@ -33,7 +33,7 @@ export function merge(className: falsy | string | Record<string, unknown>, ...cl
         typeof className === 'string' || !className
             ? className
             : Object.entries(className).filter(([, v]) => v).map(([k]) => k).join(' '),
-        ...classNames
+        ...classNames,
     ].filter(Boolean).join(' ');
 }
 
@@ -85,7 +85,7 @@ export const mod = (a: number, b: number) => ((a % b) + b) % b;
 export const isBrowser = () => typeof window !== 'undefined';
 
 export const action = <Args extends unknown[], Result>(
-    write: Write<Args, Result>
+    write: Write<Args, Result>,
 ): WritableAtom<never, Args, Result> => atom(null as never, write);
 export const useAction = useSetAtom;
 
@@ -103,7 +103,7 @@ export type Clicker = (e: React.SyntheticEvent) => void;
 export const click = (handle: Clicker): Partial<React.HTMLAttributes<HTMLElement>> => ({
     tabIndex: 0,
     onClick: handle,
-    onKeyUp: clickSelfOnEnter
+    onKeyUp: clickSelfOnEnter,
 });
 
 export function normalizedMap<TKey, TValue, TArgs extends readonly any[]>(factory: (id: TKey, ...args: TArgs) => TValue) {
@@ -126,7 +126,7 @@ export function normalizedMap<TKey, TValue, TArgs extends readonly any[]>(factor
             remove(id: TKey) {
                 map.delete(id);
             },
-        }
+        },
     );
 }
 

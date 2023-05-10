@@ -1,10 +1,10 @@
 export const ALTERNATION_REGEX = /\[(\w+\|?)*\]/;
 
 export type HotkeyInformation = {
-    shift: boolean | null,
-    ctrl: boolean | null,
-    alt: boolean | null,
-    keys: string[],
+    shift: boolean | null
+    ctrl: boolean | null
+    alt: boolean | null
+    keys: string[]
 }
 export function parseHotkey(hotkey: string): HotkeyInformation {
     const keys: string[] = [];

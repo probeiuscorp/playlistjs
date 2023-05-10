@@ -9,7 +9,7 @@ import styles from './Modal.module.css';
 export const MODAL_ANIMATE_OUT_TIME = 120;
 
 export type ModalProps = {
-    tabIndex?: number,
+    tabIndex?: number
     onClose(): void
 };
 export function Modal({ children, tabIndex, onClose }: React.PropsWithChildren<ModalProps>) {

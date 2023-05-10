@@ -5,9 +5,9 @@ import Head from 'next/head';
 import React from 'react';
 
 export type PageProps = React.PropsWithChildren<{
-    className?: string,
-    store?: Store,
-    title?: string,
+    className?: string
+    store?: Store
+    title?: string
 }>;
 export function Page({ className, store, title = 'Playlist.js', children }: PageProps) {
     return (

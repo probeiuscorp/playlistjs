@@ -6,8 +6,8 @@ import { playlist } from ':/state/playlist';
 import { FileOpenFile } from './FileOpenFile';
 import styles from './FilesOpen.module.css';
 
-export interface FilesOpenProps {
-    
+export type FilesOpenProps = {
+
 }
 
 export function FilesOpen({ }: FilesOpenProps) {

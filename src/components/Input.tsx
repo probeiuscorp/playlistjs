@@ -3,8 +3,8 @@ import React from 'react';
 import styles from './Input.module.css';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-    value: string,
-    setValue(next: string): void,
+    value: string
+    setValue(next: string): void
 }
 export function Input({ value, setValue, className, ...props }: InputProps)  {
     return (
