@@ -7,25 +7,25 @@ import { FilesOpen } from './FilesOpen';
 import { FileEditor } from './FileEditor';
 import { Directory } from './Directory';
 import styles from './PagePlaylist.module.css';
-import { useHotkeys } from ':/hooks/useHotkeys';
 import { Playlist } from ':/models/Playlists';
+import { useHotkey } from ':/hooks/useHotkey';
 
 export function PagePlaylist({ id, directory }: Playlist) {
     const store = useInitializedStore(store => {
         store.set(playlist.deserialize, directory);
     }, [directory]);
 
-    useHotkeys({
-        'ctrl + s'() {
-            const directory = store.set(playlist.serialize);
-            fetch('/api/save', {
-                method: 'POST',
-                body: JSON.stringify({
-                    id,
-                    directory,
-                } satisfies Playlist)
-            });
-        }
+    useHotkey('ctrl + s', () => {
+        const directory = store.set(playlist.serialize);
+        const body: Playlist = {
+            id,
+            directory,
+        };
+        
+        fetch('/api/save', {
+            method: 'POST',
+            body: JSON.stringify(body),
+        });
     });
 
     return (

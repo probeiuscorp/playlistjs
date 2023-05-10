@@ -10,7 +10,7 @@ import { DirectoryFile } from './DirectoryFile';
 import { click, useAction } from ':/util';
 import { Modals } from ':/components/modal';
 import { ModalChangeName } from './ModalChangeName';
-import { useHotkeys } from ':/hooks/useHotkeys';
+import { useHotkey } from ':/hooks/useHotkey'; 
 import { useFocus } from ':/hooks/useFocus';
 import { FileKind } from ':/models/Playlists';
 
@@ -41,17 +41,15 @@ export function Directory() {
     };
 
     const container = useFocus();
-    useHotkeys({
-        'alt + shift? + n'({ shift }) {
-            if(shift) {
-                handleAddNote();
-            } else {
-                handleAddFile();
-            }
-        },
-        'alt + d'() {
-            container.focus();
+    useHotkey('alt + shift? + n', ({ shift }) => {
+        if(shift) {
+            handleAddNote();
+        } else {
+            handleAddFile();
         }
+    });
+    useHotkey('alt + d', () => {
+        container.focus();
     });
     
     return (

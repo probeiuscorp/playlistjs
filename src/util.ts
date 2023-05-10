@@ -89,9 +89,10 @@ export const action = <Args extends unknown[], Result>(
 ): WritableAtom<never, Args, Result> => atom(null as never, write);
 export const useAction = useSetAtom;
 
-export function createEventListener<T extends keyof WindowEventMap>(event: T, handler: (e: WindowEventMap[T]) => void): () => void {
-    window.addEventListener(event, handler);
-    return () => window.removeEventListener(event, handler);
+export function createEventListener<T extends keyof WindowEventMap>(event: T, handler: (e: WindowEventMap[T]) => void, target?: any): () => void {
+    const t = target ? target : window;
+    t.addEventListener(event, handler);
+    return () => t.removeEventListener(event, handler);
 }
 
 export const clickSelfOnEnter: KeyboardEventHandler<HTMLElement> = (e) => {
