@@ -1,5 +1,6 @@
-import { compile } from ':/lib/ajv';
 import { collection } from ':/lib/mongo';
+import schema from './Playlist.json';
+import { ajv } from ':/lib/ajv';
 
 export type FileKind = 'file' | 'note';
 export type PlaylistFile = {
@@ -18,67 +19,8 @@ export type Playlist = {
     id: string
     directory: PlaylistDirectory
 };
-export const isPlaylist = compile<Playlist>({
-    type: 'object',
-    properties: {
-        id: {
-            type: 'string',
-        },
-        directory: {
-            type: 'object',
-            properties: {
-                files: {
-                    type: 'array',
-                    items: {
-                        type: 'object',
-                        properties: {
-                            id: {
-                                type: 'string',
-                            },
-                            kind: {
-                                enum: ['file', 'note'],
-                            },
-                            path: {
-                                type: 'string',
-                            },
-                            content: {
-                                type: 'string',
-                            },
-                            isEntry: {
-                                type: 'boolean',
-                            },
-                        },
-                        required: [
-                            'id',
-                            'kind',
-                            'path',
-                            'content',
-                            'isEntry',
-                        ],
-                    },
-                },
-                openFiles: {
-                    type: 'array',
-                    items: {
-                        type: 'string',
-                    },
-                },
-                open: {
-                    type: 'string',
-                },
-            },
-            required: [
-                'files',
-                'openFiles',
-            ],
-        },
-    },
-    required: [
-        'id',
-        'directory',
-    ],
-});
 
+export const isPlaylist = ajv.compile<Playlist>(schema);
 const pending = collection<Playlist>('playlists');
 
 export async function getPlaylistById(id: string) {

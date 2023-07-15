@@ -15,7 +15,7 @@ import { atom } from 'jotai/vanilla';
 import { noop } from 'swr/_internal';
 
 type Editor = editor.IStandaloneCodeEditor;
-type Monaco = typeof import('/home/caleb/playlistjs/node_modules/monaco-editor/esm/vs/editor/editor.api');
+type Monaco = typeof import('monaco-editor/esm/vs/editor/editor.api');
 
 const loadingGrammarCacheAtom = atom<Promise<string> | null>(null);
 const actionLoadGrammar = action((get, set) => {

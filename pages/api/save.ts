@@ -2,10 +2,6 @@ import { createHandler } from ':/lib/mongo';
 import { isPlaylist, updatePlaylist } from ':/models/Playlists';
 import { attempt } from ':/util';
 
-export const config = {
-    runtime: 'edge',
-};
-
 export default createHandler(async (req, res) => {
     if(req.method !== 'POST')
         return void res.status(405).send('Use POST');

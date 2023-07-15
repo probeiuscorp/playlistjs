@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "directory": {
+            "type": "object",
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "kind": {
+                                "enum": ["file", "note"]
+                            },
+                            "path": {
+                                "type": "string"
+                            },
+                            "content": {
+                                "type": "string"
+                            },
+                            "isEntry": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "kind",
+                            "path",
+                            "content",
+                            "isEntry"
+                        ]
+                    }
+                },
+                "openFiles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "open": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "files",
+                "openFiles"
+            ]
+        }
+    },
+    "required": [
+        "id",
+        "directory"
+    ]
+}
