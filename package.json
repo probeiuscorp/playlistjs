@@ -2,9 +2,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build:all && next build",
     "start": "next start",
     "test": "mocha -r tsx 'src/**/*.test.ts'",
+    "build:all": "npm run build:std && npm run build:theme",
     "build:theme": "tsx scripts/buildTheme/buildTheme.ts",
     "build:std": "tsx scripts/buildStd"
   },
