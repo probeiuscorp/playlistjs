@@ -43,6 +43,8 @@ export function mapsort<T, R>(
                     ? 1
                     : -1;
         });
+    } else {
+        final = mapped.sort((a, b) => a.mapped as number - (b.mapped as number));
     }
 
     return final.map((item) => item.original);

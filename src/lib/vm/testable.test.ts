@@ -1,7 +1,7 @@
 import { split, rehead, mapsort, shuffle } from './testable';
 import assert from 'node:assert/strict';
 
-describe('vm', () => {
+describe('testable', () => {
     it('Array.prototype.shuffle', () => {
         const counts: Record<string, number> = {
             '012': 0,
@@ -23,9 +23,9 @@ describe('vm', () => {
         const max = expanded.reduce((currentMax, [permutation, count]) => Math.max(currentMax, count), 0);
         
         const expected = runs / 6;
-        const slice = expected * 0.05;
-        const lowAcceptableBound = expected - slice;
-        const highAcceptableBound = expected + slice; 
+        const acceptableDeviation = expected * 0.05;
+        const lowAcceptableBound = expected - acceptableDeviation;
+        const highAcceptableBound = expected + acceptableDeviation; 
         assert(min > lowAcceptableBound, `Expected ${expected}, but the lowest was ${min}! (${lowAcceptableBound} is the lowest acceptable)`);
         assert(max < highAcceptableBound, `Expected ${expected}, but the highest was ${max}! (${highAcceptableBound} is the highest acceptable)`);
     });
@@ -58,7 +58,7 @@ describe('vm', () => {
                 'fourth',
             ]);
         });
-
+        
         it('with compare', () => {
             const mapsorted = mapsort(data, ({ a, b }) => a * b, (a, b) => a - b).map(entry => entry.key);
             assert.deepEqual(mapsorted, [
