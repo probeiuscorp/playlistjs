@@ -16,7 +16,6 @@ export const getServerSideProps: GetServerSideProps<WorkspaceData> = async (cont
         return { notFound: true };
     
     const workspace = await findWorkspaceById(id, session.user?.email);
-    console.log(workspace);
     if(workspace === null)
         return { notFound: true };
 

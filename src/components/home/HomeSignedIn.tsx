@@ -1,17 +1,16 @@
 import React from 'react';
-import { fetcher } from ':/hooks/useFetch';
+import { useFetch } from ':/hooks/useFetch';
 import { useUser } from ':/hooks/useUser';
 import { WorkspaceData } from ':/models/Workspaces';
 import { Button, Card, Editable, EditableInput, EditablePreview, Flex, IconButton, Menu, MenuButton, MenuItem, MenuList, Text } from '@chakra-ui/react';
 import { signOut } from 'next-auth/react';
-import useSWR from 'swr';
-import { Page } from '../Page';
-import { VscFolder, VscKebabVertical, VscTrash } from 'react-icons/vsc';
 import { MdHeadphones } from 'react-icons/md';
+import { VscFolder, VscKebabVertical, VscTrash } from 'react-icons/vsc';
+import { Page } from '../Page';
 
 export function HomeSignedIn() {
     const user = useUser()!;
-    const { data: workspaces, error, isLoading, mutate } = useSWR<WorkspaceData[]>('/api/workspaces', fetcher);
+    const { data: workspaces, error, isLoading, mutate } = useFetch<WorkspaceData[]>('/api/workspaces');
 
     async function addWorkspace() {
         const workspace: WorkspaceData = await fetch('/api/workspaces', {

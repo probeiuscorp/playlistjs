@@ -21,7 +21,6 @@ export function FileOpenFile({ id, props, handle }: FileOpenFileProps) {
     const deleteFile = useAction(workspace.deleteFile);
 
     const ref = useHotkey('delete', () => {
-        console.log(id);
         deleteFile(id);
     });
 
