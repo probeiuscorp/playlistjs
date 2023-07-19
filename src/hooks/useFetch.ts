@@ -1,1 +1,1 @@
-export const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
+export const fetcher: typeof fetch = (...args) => fetch(...args).then((res) => res.json());
