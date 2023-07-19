@@ -42,15 +42,11 @@
     flex-shrink: 0;
 }
 
-.fileHandle {
-    padding-top: 3px;
-}
-
 .fileName {
     flex-basis: 0;
     flex-grow: 1;
     flex-shrink: 1;
-    padding-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 .fileAction {
