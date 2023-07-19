@@ -2,7 +2,7 @@ import produce from 'immer';
 import { useAtom } from 'jotai/react';
 import React from 'react';
 import { DragDropContext, Draggable, Droppable, OnDragEndResponder } from 'react-beautiful-dnd';
-import { playlist } from ':/state/playlist';
+import { workspace } from ':/state/workspace';
 import { FileOpenFile } from './FileOpenFile';
 import styles from './FilesOpen.module.css';
 
@@ -11,7 +11,7 @@ export type FilesOpenProps = {
 }
 
 export function FilesOpen({ }: FilesOpenProps) {
-    const [open, setOpen] = useAtom(playlist.open);
+    const [open, setOpen] = useAtom(workspace.open);
 
     const handleDragEnd: OnDragEndResponder = ({ source, destination }) => {
         if(destination) {

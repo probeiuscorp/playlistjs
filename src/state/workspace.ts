@@ -2,7 +2,7 @@ import { atom } from 'jotai/vanilla';
 import { atomFamily } from 'jotai/vanilla/utils';
 import { action, normalizedMap, out } from ':/util';
 import { nanoid } from 'nanoid';
-import { FileKind, PlaylistDirectory } from ':/models/Playlists';
+import { FileKind, WorkspaceDirectory } from ':/models/Workspaces';
 
 export type ID = string;
 export type FileInfo = {
@@ -90,7 +90,7 @@ const closeFile = action((get, set, id: ID) => {
     }
 });
 
-const serialize = action((get): PlaylistDirectory => {
+const serialize = action((get): WorkspaceDirectory => {
     const open = get(activeFileAtom);
     const openFiles = get(openAtom);
     const ids = get(directoryAtom);
@@ -116,7 +116,7 @@ const serialize = action((get): PlaylistDirectory => {
     };
 });
 
-const deserialize = action((get, set, { open, openFiles, files }: PlaylistDirectory) => {
+const deserialize = action((get, set, { open, openFiles, files }: WorkspaceDirectory) => {
     set(activeFileAtom, open ?? null);
     set(openAtom, openFiles);
 
@@ -131,7 +131,7 @@ const deserialize = action((get, set, { open, openFiles, files }: PlaylistDirect
     }
 });
 
-export const playlist = {
+export const workspace = {
     open: openAtom,
     directory: directoryAtom,
     files: filesFamily,

@@ -2,6 +2,7 @@ import { atom, WritableAtom } from 'jotai/vanilla';
 import { useSetAtom } from 'jotai/react';
 import { falsy, Write } from './types';
 import React, { KeyboardEventHandler } from 'react';
+import { IsAny } from 'mongodb';
 
 export const DROP = Symbol('map()#DROP');
 export type DROP = typeof DROP;
@@ -54,8 +55,9 @@ export async function all<T extends Record<string, any>>(record: T): Promise<{
     return resolved as any;
 }
 
-export function attempt<T>(executor: () => Promise<T>): Promise<[T | undefined, unknown]>;
-export function attempt<T>(executor: () => T): [T | undefined, unknown];
+export function attempt<T>(executor: () => T): (
+    IsAny<T, [any, unknown], T extends Promise<any> ? Promise<[Awaited<T> | undefined, unknown]> : [T | undefined, unknown]>
+);
 export function attempt(executor: () => any): any {
     try {
         const r = executor();

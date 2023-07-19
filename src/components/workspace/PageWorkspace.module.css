@@ -5,4 +5,5 @@
         "nav directory editor";
     grid-template-columns: 60px 240px 1fr;
     grid-template-rows: 48px 1fr;
+    font-family: "GT Pressura Mono";
 }

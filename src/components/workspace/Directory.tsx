@@ -4,7 +4,7 @@ import { DragDropContext, Draggable, Droppable, OnDragEndResponder } from 'react
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
 import Tippy from '@tippyjs/react';
 import { useAtom } from 'jotai/react';
-import { playlist } from ':/state/playlist';
+import { workspace } from ':/state/workspace';
 import produce from 'immer';
 import { DirectoryFile } from './DirectoryFile';
 import { click, useAction } from ':/util';
@@ -12,11 +12,11 @@ import { Modals } from ':/components/modal';
 import { ModalChangeName } from './ModalChangeName';
 import { useHotkey } from ':/hooks/useHotkey'; 
 import { useFocus } from ':/hooks/useFocus';
-import { FileKind } from ':/models/Playlists';
+import { FileKind } from ':/models/Workspaces';
 
 export function Directory() {
-    const [directory, setDirectory] = useAtom(playlist.directory);
-    const addFile = useAction(playlist.addFile);
+    const [directory, setDirectory] = useAtom(workspace.directory);
+    const addFile = useAction(workspace.addFile);
 
     const addGenericFile = async (kind: FileKind) => {
         const name = await Modals.open(ModalChangeName);

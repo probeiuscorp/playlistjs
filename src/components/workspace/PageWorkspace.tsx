@@ -1,30 +1,25 @@
 import React from 'react';
 import { useInitializedStore } from ':/hooks/useInitializedStore';
-import { playlist } from ':/state/playlist';
+import { workspace } from ':/state/workspace';
 import { Page } from '../Page';
 import { Nav } from '../Nav';
 import { FilesOpen } from './FilesOpen';
 import { FileEditor } from './FileEditor';
 import { Directory } from './Directory';
-import styles from './PagePlaylist.module.css';
-import { Playlist } from ':/models/Playlists';
+import styles from './PageWorkspace.module.css';
+import { WorkspaceData } from ':/models/Workspaces';
 import { useHotkey } from ':/hooks/useHotkey';
 
-export function PagePlaylist({ id, directory }: Playlist) {
+export function PageWorkspace({ id, directory }: WorkspaceData) {
     const store = useInitializedStore(store => {
-        store.set(playlist.deserialize, directory);
+        store.set(workspace.deserialize, directory);
     }, [directory]);
 
     useHotkey('ctrl + s', () => {
-        const directory = store.set(playlist.serialize);
-        const body: Playlist = {
-            id,
-            directory,
-        };
-        
-        fetch('/api/save', {
-            method: 'POST',
-            body: JSON.stringify(body),
+        const directory = store.set(workspace.serialize);
+        fetch(`/api/workspaces/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(directory),
         });
     });
 

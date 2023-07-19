@@ -3,7 +3,7 @@ import { Modals } from ':/components/modal';
 import { useAtom } from 'jotai/react';
 import React from 'react';
 import { VscEdit, VscGripper } from 'react-icons/vsc';
-import { ID, playlist } from ':/state/playlist';
+import { ID, workspace } from ':/state/workspace';
 import styles from './DirectoryFile.module.css';
 import { ModalChangeName } from './ModalChangeName';
 
@@ -14,10 +14,10 @@ type DirectoryFileProps = {
 }
 
 export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
-    const [file] = useAtom(playlist.files(id));
+    const [file] = useAtom(workspace.files(id));
     const [name, setName] = useAtom(file.name);
-    const openFile = useAction(playlist.openFile);
-    const deleteFile = useAction(playlist.deleteFile);
+    const openFile = useAction(workspace.openFile);
+    const deleteFile = useAction(workspace.deleteFile);
 
     const handleKeyUp: React.KeyboardEventHandler = e => {
         if(e.key === 'Delete') {

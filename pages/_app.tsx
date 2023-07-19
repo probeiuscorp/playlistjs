@@ -13,7 +13,7 @@ const theme = extendTheme({
         useSystemColorMode: false,
     },
     fonts: {
-        heading: 'GT Pressura Mono',
+        heading: 'Inter',
         body: 'Open Sans',
     },
 });
@@ -25,7 +25,7 @@ const justMakeItDarkThemeMan: typeof localStorageManager = {
     ssr: false,
 };
 
-export default function App({ Component, pageProps: { session, pageProps }}: AppProps) {
+export default function App({ Component, pageProps: { session, ...pageProps }}: AppProps) {
     return (
         <SessionProvider session={session}>
             <ChakraProvider theme={theme} resetCSS colorModeManager={justMakeItDarkThemeMan}>

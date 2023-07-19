@@ -3,7 +3,7 @@ import Editor from '@monaco-editor/react';
 import { type editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAtom, useAtomValue } from 'jotai/react';
 import React, { useEffect } from 'react';
-import { playlist } from ':/state/playlist';
+import { workspace } from ':/state/workspace';
 import styles from './FileEditor.module.css';
 // @ts-ignore
 import content from ':/lib/vm/std.d.ts.txt';
@@ -53,13 +53,13 @@ const actionLoadTextMate = action(async (get, set, editor: Editor, monaco: Monac
 });
 
 const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
-    const directory = get(playlist.directory);
+    const directory = get(workspace.directory);
     for(const id of directory) {
-        const file = get(playlist.files(id));
+        const file = get(workspace.files(id));
         const path = get(file.full);
         const uri = monaco.Uri.parse(path);
         if(monaco.editor.getModel(uri) === null) {
-            const content = get(playlist.content(id));
+            const content = get(workspace.content(id));
             const language = file.kind === 'file'
                 ? 'typescript'
                 : 'markdown';
@@ -73,7 +73,7 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
 });
 
 export function FileEditor() {
-    const file = useAtomValue(playlist.activeFile);
+    const file = useAtomValue(workspace.activeFile);
     const loadGrammar = useAction(actionLoadGrammar);
 
     useEffect(() => {
@@ -96,8 +96,8 @@ type FileEditorCodeProps = {
     file: string
 };
 function FileEditorCode({ file }: FileEditorCodeProps) {
-    const info = useAtomValue(playlist.files(file));
-    const [value, setValue] = useAtom(playlist.content(file));
+    const info = useAtomValue(workspace.files(file));
+    const [value, setValue] = useAtom(workspace.content(file));
     const full = useAtomValue(info.full);
     const loadTextMate = useAction(actionLoadTextMate);
     const handleEditorWillMount = useAction(actionHandleEditorWillMount);
