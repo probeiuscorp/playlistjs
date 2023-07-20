@@ -84,6 +84,17 @@ interface Array<T> {
      */
     take(): T | undefined
     take(n: number): T[]
+
+    pickWeighed(...args: (
+        T extends number 
+            ? [map?: (item: T) => number]
+            : [map: (item: T) => number]
+    )): T | undefined
+    pickWeighed(...args: (
+        T extends number
+            ? [take: number, map?: (item: T) => number]
+            : [take: number, map: (item: T) => number]
+    )): T[]
 }
 
 interface Math {
