@@ -16,7 +16,8 @@
  */
 declare function chance(decimal: number): boolean;
 
-type playlist = Iterable<string>;
+type song = string;
+type playlist = Iterable<song> | (() => Iterable<song>);
 declare const Playlist: {
     yield(playlist: playlist): void
     yield(name: string, playlist: playlist): void
@@ -71,6 +72,18 @@ interface Array<T> {
         map: (item: T, index: number, array: T[]) => TTransformed,
         compare?: (a: TTransformed, b: TTransformed) => number | boolean,
     ): T[]
+
+    /**
+     * Picks and returns @param n elements.
+     */
+    pick(): T | undefined
+    pick(n: number): T[]
+
+    /**
+     * Picks @param n elements, returns them and then removes them in-place.
+     */
+    take(): T | undefined
+    take(n: number): T[]
 }
 
 interface Math {
