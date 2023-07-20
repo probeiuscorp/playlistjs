@@ -28,7 +28,3 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-
-# generated std lib
-std.js.txt
-std.d.ts.txt

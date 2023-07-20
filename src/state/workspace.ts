@@ -22,6 +22,7 @@ type FileFactory = {
 }
 const filesFamily = normalizedMap((id: string, { kind, name }: FileFactory) => {
     const nameAtom = atom(name);
+    const extension = kind === 'file' ? '.ts' : '.md';
     
     return atom({
         id,
@@ -33,11 +34,9 @@ const filesFamily = normalizedMap((id: string, { kind, name }: FileFactory) => {
         }),
         full: atom(get => {
             const name = get(nameAtom);
-            const extension = kind === 'file'
-                ? '.ts'
-                : '.md';
             return name + extension;
         }),
+        extension,
     });
 });
 const contentFamily = atomFamily((id: ID | null) => atom(''));

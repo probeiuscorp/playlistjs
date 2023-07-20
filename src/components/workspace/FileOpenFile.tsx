@@ -32,7 +32,7 @@ export function FileOpenFile({ id, props, handle }: FileOpenFileProps) {
             {...props}
             {...handle}
         >
-            <span className={styles.close} onClick={() => closeFile(id)}>
+            <span className={styles.close} onClick={(e) => (e.stopPropagation(), closeFile(id))}>
                 <VscClose/>
             </span>
             <span className={styles.name}>

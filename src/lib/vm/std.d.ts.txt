@@ -1,25 +1,25 @@
 /// <reference no-default-lib="true"/>
 /// <reference lib="es6"/>
 
-import { split, rehead, mapsort, shuffle } from './testable';
-
 /* eslint no-redeclare: 0 */
 /* eslint @typescript-eslint/no-namespace: 0 */
 /* eslint @typescript-eslint/no-unused-vars: 0 */
 
 /**
- * @internal
+ * 
+ * 
+ * @example
+ * ```javascript
+ * if(chance(0.5))
+ * if(chance(1 / 2))
+ * ```
  */
-declare function $$submit(data: string): void;
+declare function chance(decimal: number): boolean;
 
-const chance = (decimal: number) => {
-    return Math.random() < decimal;
-};
-
-type Playlist = string[];
-const Playlist: {
-    yield(playlist: Playlist): void
-    yield(name: string, playlist: Playlist): void
+type playlist = Iterable<string>;
+declare const Playlist: {
+    yield(playlist: playlist): void
+    yield(name: string, playlist: playlist): void
 
     readonly input: {
         string(label: string): string
@@ -27,25 +27,6 @@ const Playlist: {
         boolean(label: boolean): boolean
         options<T>(options: [string, T][]): T
     }
-} = {
-    yield(a: Playlist | string, b?: Playlist) {
-        let name: string;
-        let playlist: Playlist;
-        if(Array.isArray(b) && typeof a === 'string') {
-            name = a;
-            playlist = b;
-        } else if(Array.isArray(a)) {
-            name = 'Unnamed yield';
-            playlist = a;
-        } else throw new TypeError();
-    
-        $$submit(name + '\0' + playlist.join('\0'));
-    },
-    input: {
-        number() {
-
-        }
-    },
 };
 
 interface Array<T> {
@@ -92,38 +73,7 @@ interface Array<T> {
     ): T[]
 }
 
-Array.prototype.shuffle = function(this: any[]) {
-    return shuffle(this);
-};
-
-Array.prototype.split = function(this: any[], index) {
-    return split(this, index);
-};
-
-Array.prototype.rehead = function(this: any[], index) {
-    return rehead(this, index);
-};
-
-Array.prototype.mapsort = function(this: any[], map, sort) {
-    return mapsort(this, map, sort);
-};
-
 interface Math {
     random(max: number): number
     random(min: number, max: number): number
 }
-
-/**
- * @internal
- */
-const $$oldMathRandom = Math.random;
-Math.random = (a?: number, b?: number) => {
-    const rand = $$oldMathRandom();
-    if(typeof a === 'number') {
-        if(typeof b === 'number') {
-            return rand * (b - a) + a;
-        }
-        return rand * a;
-    }
-    return rand;
-};
