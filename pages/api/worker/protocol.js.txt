@@ -1,0 +1,50 @@
+/**
+ * @type {Iterable<string>}
+ */
+let $$$playlist;
+/**
+ * @type {Map<string, Iterable<string>>}
+ */
+const $$$map = new Map();
+const Playlist = {
+    yield(a, b) {
+        let name = undefined;
+        let playlist;
+        if(b) {
+            name = a;
+            playlist = b;
+        } else {
+            playlist = a;
+        }
+
+        if(!(name === undefined || typeof name === 'string')) {
+            throw new TypeError('name must be a string');
+        }
+
+        const iter = (typeof playlist === 'function' ? playlist() : playlist);
+        if(Symbol.iterator in iter) {
+            $$$map.set(name ?? null, iter);
+        } else throw new TypeError('playlist must be either an iterable or a function that returns an iterable');
+    },
+};
+
+onmessage = (message) => {
+    const msg = JSON.parse(message.data);
+    if(msg.type === 'play') {
+        $$$playlist = $$$map.get(msg.playlist)[Symbol.iterator]();
+    } else if(msg.type === 'pull') {
+        const next = $$$playlist.next();
+        postMessage(JSON.stringify({
+            type: 'song',
+            song: next.value,
+            done: !!next.done,
+        }));
+    }
+};
+
+/*$$$*/
+
+postMessage(JSON.stringify({
+    type: 'ready',
+    playlists: [...$$$map.keys()],
+}));

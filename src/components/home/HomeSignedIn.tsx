@@ -75,7 +75,7 @@ export function HomeSignedIn() {
                                     <EditablePreview pl={2}/>
                                     <EditableInput pl={2} pr={2}/>
                                 </Editable>
-                                <IconButton aria-label="Listen" icon={<MdHeadphones/>}/>
+                                <IconButton aria-label="Listen" icon={<MdHeadphones/>} as="a" href={`/listen/${workspace.id}`}/>
                                 <IconButton aria-label="Open" icon={<VscFolder/>} as="a" href={`/workspace/${workspace.id}`}/>
                                 <Menu>
                                     <MenuButton

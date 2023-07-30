@@ -3,6 +3,20 @@ import { Page } from '../Page';
 import { Button, ButtonGroup, Flex, Heading, Text, VStack } from '@chakra-ui/react';
 import { signIn } from 'next-auth/react';
 import { VscGithub } from 'react-icons/vsc';
+import { Code } from './Code';
+
+const code = `\
+// Create a playlist of one song
+const neverGonnaGiveYouUp = 'dQw4w9WgXcQ';
+Playlist.yield([neverGonnaGiveYouUp]);
+
+// Loop forever
+Playlist.yield(function*() {
+    while(true) {
+        yield neverGonnaGiveYouUp;
+    }
+});
+`;
 
 export function HomeSignedOut() {
     return (
@@ -29,6 +43,10 @@ export function HomeSignedOut() {
                         GitHub
                     </Button>
                 </ButtonGroup>
+            </Flex>
+
+            <Flex direction="column" width="42em" ml="auto" mr="auto" mt="2em">
+                <Code code={code}/>
             </Flex>
         </Page>
     );

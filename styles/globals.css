@@ -1,7 +1,6 @@
 body {
     padding: 0;
     margin: 0;
-    height: 100vh;
     color-scheme: dark;
     color: var(--foreground-dimmer);
     font-family: 'GT Pressura Mono', monospace;
@@ -103,14 +102,6 @@ body {
     --white: #FCFCFC;
 }
 
-#__next {
-    height: 100%;
-}
-
-#__next > div {
-    height: 100%;
-}
-
 a {
     color: inherit;
     text-decoration: none;
@@ -141,7 +132,6 @@ button {
 
 main {
     width: 100%;
-    height: 100%;
 }
 
 .action {
@@ -152,4 +142,15 @@ main {
 
 .action:hover {
     background-color: rgba(255, 255, 255, 0.15);
+}
+
+.code {
+    border-radius: 3px;
+    font-size: 125% !important;
+    background-color: var(--background-overlay) !important;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
 }

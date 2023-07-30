@@ -1,0 +1,50 @@
+.container {
+    flex-grow: 1;
+}
+
+.videoContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    gap: 0.5em;
+}
+
+.video {
+    aspect-ratio: 16 / 9;
+}
+
+@media (orientation: portrait) {
+    .video {
+        width: 100%;
+    }
+}
+
+@media (orientation: landscape) {
+    .container {
+        display: grid;
+        grid-template-rows: 60vh 30vh;
+    }
+
+    .video {
+        height: 100%;
+    }
+}
+
+.upcomingAbout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.upcomingContainer {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.upcoming {
+    height: 100%;
+}
