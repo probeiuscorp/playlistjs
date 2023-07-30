@@ -4,6 +4,7 @@ import { WorkspaceData } from ':/models/Workspaces';
 import { useController } from './useController';
 import { ListenListening } from './ListenListening';
 import { Flex } from '@chakra-ui/react';
+import { PickPlaylist } from './PickPlaylist';
 
 export function PageListen({ id }: WorkspaceData) {
     const controller = useController(id);
@@ -12,11 +13,12 @@ export function PageListen({ id }: WorkspaceData) {
         <Page title="playback">
             <Flex p={8} flexDirection="column" minHeight="100vh">
                 {controller.stage === 'pick' && (
-                    controller.playlists?.map((playlist) => (
-                        <div key={playlist} onClick={() => controller.setPlaylist(playlist)}>
-                            {playlist ?? 'Default'}
-                        </div>
-                    ))
+                    controller.playlists ? (
+                        <PickPlaylist
+                            playlists={controller.playlists}
+                            pick={controller.setPlaylist}
+                        />
+                    ) : 'Loading...'
                 )}
                 {controller.stage === 'picked' && (
                     <ListenListening
