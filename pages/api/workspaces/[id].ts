@@ -23,6 +23,9 @@ export default handler(async (req, res, getUser) => {
             $set: {
                 'data.directory': directory,
             },
+            $unset: {
+                code: true,
+            },
         });
         if(status.ok === 0)
             return void res.status(404).send('Could not find any workspace by that id');

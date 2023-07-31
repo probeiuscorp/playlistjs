@@ -24,6 +24,7 @@ export type WorkspaceData = {
 export type Workspace = {
     user: string
     data: WorkspaceData
+    code?: string
 };
 
 export const isWorkspace = ajv.compile<Workspace>(schema);

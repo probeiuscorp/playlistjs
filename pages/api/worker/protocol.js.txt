@@ -42,7 +42,7 @@ onmessage = (message) => {
     }
 };
 
-/*$$$*/
+/**@license*/
 
 postMessage(JSON.stringify({
     type: 'ready',
