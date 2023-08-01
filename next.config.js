@@ -4,7 +4,11 @@ const MonacoPlugin = require('monaco-editor-webpack-plugin');
 module.exports = {
     webpack: (config, { isServer }) => {
         config.module.rules.push({
-            test: /\.txt$/,
+            test: [
+                /\.txt$/,
+                /testable.ts$/,
+            ],
+            // test: /\.txt$/,
             loader: 'raw-loader',
         });
 

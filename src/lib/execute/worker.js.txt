@@ -1,3 +1,42 @@
+import { shuffle, split, rehead, mapsort, pick } from './testable';
+
+Array.prototype.shuffle = function() {
+    return shuffle(this);
+};
+
+Array.prototype.split = function(index) {
+    return split(this, index);
+};
+
+Array.prototype.rehead = function(index) {
+    return rehead(this, index);
+};
+
+Array.prototype.mapsort = function(...args) {
+    return mapsort(this, ...args);
+};
+
+Array.prototype.pick = function(...args) {
+    return pick(this, ...args);
+};
+
+const $$$oldRandom = Math.random;
+Math.random = function(a, b) {
+    if(typeof a === 'number') {
+        if(typeof b === 'number') {
+            return $$$oldRandom() * (b - a) + a;
+        } else {
+            return $$$oldRandom() * a;
+        }
+    } else {
+        return $$$oldRandom();
+    }
+};
+
+function chance(chance) {
+    return Math.random() < chance;
+}
+
 /**
  * @type {Iterable<string>}
  */

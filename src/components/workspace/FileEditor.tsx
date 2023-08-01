@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { workspace } from ':/state/workspace';
 import styles from './FileEditor.module.css';
 // @ts-ignore
-import content from ':/lib/vm/std.d.ts.txt';
+import content from ':/lib/execute/std.d.ts.txt';
 import { wireTmGrammars } from 'monaco-editor-textmate';
 import { Registry } from 'monaco-textmate';
 import { loadWASM } from 'onigasm';

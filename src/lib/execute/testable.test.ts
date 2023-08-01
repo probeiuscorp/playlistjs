@@ -1,7 +1,14 @@
-import { split, rehead, mapsort, shuffle } from './testable';
+import { split, rehead, mapsort, shuffle, pick } from './testable';
 import assert from 'node:assert/strict';
 
 describe('testable', () => {
+    it('Array.prototype.pick', () => {
+        console.log(pick([1, 2, 3, 4]));
+        console.log(pick([1, 2, 3, 4], 2));
+        console.log(pick([1, 2, 3, 4], (n: number) => n));
+        console.log(pick([1, 2, 3, 4], 2, (n: number) => n));
+    });
+
     it('Array.prototype.shuffle', () => {
         const counts: Record<string, number> = {
             '012': 0,

@@ -79,12 +79,6 @@ interface Array<T> {
      */
     pick(map?: (item: T) => number): T | undefined
     pick(n: number, map?: (item: T) => number): T[]
-
-    /**
-     * Picks @param n elements, returns them and then removes them in-place.
-     */
-    take(map?: (item: T) => number): T | undefined
-    take(n: number, map?: (item: T) => number): T[]
 }
 
 interface Math {
