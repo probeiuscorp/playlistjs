@@ -2,7 +2,6 @@ import React from 'react';
 import { useInitializedStore } from ':/hooks/useInitializedStore';
 import { workspace } from ':/state/workspace';
 import { Page } from '../Page';
-import { Nav } from '../Nav';
 import { FilesOpen } from './FilesOpen';
 import { FileEditor } from './FileEditor';
 import { Directory } from './Directory';
@@ -25,7 +24,6 @@ export function PageWorkspace({ id, directory }: WorkspaceData) {
 
     return (
         <Page store={store} className={styles.app}>
-            <Nav/>
             <FilesOpen/>
             <FileEditor/>
             <Directory/>

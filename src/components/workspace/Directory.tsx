@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Directory.module.css';
 import { DragDropContext, Draggable, Droppable, OnDragEndResponder } from 'react-beautiful-dnd';
-import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
+import { VscHome, VscNewFile, VscNewFolder } from 'react-icons/vsc';
 import Tippy from '@tippyjs/react';
 import { useAtom } from 'jotai/react';
 import { workspace } from ':/state/workspace';
@@ -55,6 +55,12 @@ export function Directory() {
     return (
         <div className={styles.wrapper} ref={container.ref}>
             <div className={styles.actions}>
+                <Tippy content="Home" placement="bottom" animation="shift-away">
+                    <a className="action" href="/">
+                        <VscHome/>
+                    </a>
+                </Tippy>
+                <div className={styles.actionsSpacer}/>
                 <Tippy content="New file" placement="bottom" animation="shift-away">
                     <span className="action" {...click(handleAddFile)}>
                         <VscNewFile/>
