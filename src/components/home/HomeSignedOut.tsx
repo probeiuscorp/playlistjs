@@ -16,6 +16,18 @@ Playlist.yield(function*() {
         yield neverGonnaGiveYouUp;
     }
 });
+
+// Graphs
+Playlist.yield(function*() {
+    let head = neverGonnaGiveYouUp;
+    do {
+        yield head;
+    } while(
+        head = graph.getEdgesFrom(head).pick((edge) => (
+            connection.weight
+        ))
+    );
+})
 `;
 
 export function HomeSignedOut() {
