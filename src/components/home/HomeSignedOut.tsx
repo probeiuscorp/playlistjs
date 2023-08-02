@@ -24,7 +24,7 @@ Playlist.yield(function*() {
         yield head;
     } while(
         head = graph.getEdgesFrom(head).pick((edge) => (
-            connection.weight
+            edge.weight
         ))
     );
 })
