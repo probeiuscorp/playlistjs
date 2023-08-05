@@ -49,10 +49,10 @@ export function pick<T>(array: T[], a?: any, b?: any) {
             let walk = 0;
             const target = Math.random() * sum;
             for(let i=0;i<len;i++) {
+                walk += mapped[i];
                 if(target < walk) {
                     return array[i];
                 }
-                walk += mapped[i];
             }
         }
     }
