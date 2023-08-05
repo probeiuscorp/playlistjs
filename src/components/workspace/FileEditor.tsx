@@ -66,7 +66,10 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
             monaco.editor.createModel(content, language, uri);
         }
     }
-
+    
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+        strict: true,
+    });
     monaco.languages.typescript.typescriptDefaults.setExtraLibs([
         { content },
     ]);
