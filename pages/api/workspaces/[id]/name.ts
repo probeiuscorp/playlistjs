@@ -4,6 +4,9 @@ import { attempt } from ':/util';
 
 export default handler(async (req, res, getUser) => {
     const user = await getUser();
+    if(req.method !== 'POST')
+        return void res.status(405).send('Method Not Allowed');
+
     const id = req.query.id;
     if(typeof id !== 'string')
         return void res.status(400).send('Bad Request');
@@ -20,4 +23,5 @@ export default handler(async (req, res, getUser) => {
             'data.name': name,
         },
     });
+    res.status(200).send('OK');
 });
