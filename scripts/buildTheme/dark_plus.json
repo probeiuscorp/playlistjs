@@ -192,6 +192,12 @@
 			"settings": {
 				"foreground": "#C8C8C8"
 			}
+		},
+		{
+			"scope": "keyword.ts",
+			"settings": {
+				"foreground": "#cccccc"
+			}
 		}
 	],
 	"semanticTokenColors": {

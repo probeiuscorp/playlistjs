@@ -693,6 +693,10 @@
         {
             "foreground": "#C8C8C8",
             "token": "entity.name.label"
+        },
+        {
+            "foreground": "#cccccc",
+            "token": "keyword.ts"
         }
     ],
     "encodedTokensColors": []
