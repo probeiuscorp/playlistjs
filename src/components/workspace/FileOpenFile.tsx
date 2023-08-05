@@ -4,7 +4,6 @@ import React from 'react';
 import { VscClose } from 'react-icons/vsc';
 import { ID, workspace } from ':/state/workspace';
 import styles from './FileOpenFile.module.css';
-import { useHotkey } from ':/hooks/useHotkey';
 
 export type FileOpenFileProps = {
     id: ID
@@ -18,17 +17,11 @@ export function FileOpenFile({ id, props, handle }: FileOpenFileProps) {
     const isOpen = useAtomValue(workspace.activeFile) === id;
     const openFile = useAction(workspace.openFile);
     const closeFile = useAction(workspace.closeFile);
-    const deleteFile = useAction(workspace.deleteFile);
-
-    const ref = useHotkey('delete', () => {
-        deleteFile(id);
-    });
 
     return (
         <div
             className={merge({ [styles.active]: isOpen }, styles.file)}
             onClick={() => openFile(id)}
-            ref={ref}
             {...props}
             {...handle}
         >
