@@ -67,12 +67,11 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
         }
     }
     
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(content, '__ambient/why.d.ts');
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
         strict: true,
+        lib: ['es6'],
     });
-    monaco.languages.typescript.typescriptDefaults.setExtraLibs([
-        { content },
-    ]);
 });
 
 export function FileEditor() {
