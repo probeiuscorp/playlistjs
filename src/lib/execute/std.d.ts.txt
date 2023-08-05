@@ -85,3 +85,11 @@ interface Math {
     random(max: number): number
     random(min: number, max: number): number
 }
+
+interface Map<K, V> {
+    toArray(): [K, V][]
+}
+
+interface Set<T> {
+    toArray(): T[]
+}

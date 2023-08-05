@@ -1,5 +1,13 @@
 import { shuffle, split, rehead, mapsort, pick } from './testable';
 
+Set.prototype.toArray = function() {
+    return Array.from(this);
+};
+
+Map.prototype.toArray = function() {
+    return Array.from(this);
+};
+
 Array.prototype.shuffle = function() {
     return shuffle(this);
 };
