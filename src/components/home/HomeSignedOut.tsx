@@ -60,7 +60,14 @@ export function HomeSignedOut({ provider }: HomeSignedOutProps) {
                 </ButtonGroup>
             </Flex>
 
-            <Flex direction="column" width="42em" ml="auto" mr="auto" mt="2em">
+            <Flex
+                direction="column"
+                minWidth="42em"
+                maxWidth="max-content"
+                ml="auto"
+                mr="auto"
+                mt="2em"
+            >
                 <Code code={code}/>
             </Flex>
         </Page>
