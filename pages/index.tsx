@@ -23,6 +23,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const user = session?.user?.email ?? null;
     const workspaces = user ? await findWorkspacesByUser(user) : null;
 
+    console.log(session);
+
     return {
         props: {
             user: session?.user?.email ?? null,
