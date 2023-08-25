@@ -30,7 +30,10 @@ Playlist.yield(function*() {
 })
 `;
 
-export function HomeSignedOut() {
+export type HomeSignedOutProps = {
+    provider: string
+}
+export function HomeSignedOut({ provider }: HomeSignedOutProps) {
     return (
         <Page title="playlistjs">
             <Flex direction="column" alignItems="center">
@@ -43,8 +46,8 @@ export function HomeSignedOut() {
                     </Text>
                 </VStack>
                 <ButtonGroup spacing={2} size="lg">
-                    <Button colorScheme="teal" onClick={() => signIn()}>
-                        Sign in|up
+                    <Button colorScheme="teal" onClick={() => signIn(provider)}>
+                        Sign in with Google
                     </Button>
                     <Button
                         leftIcon={<VscGithub size="1.5em"/>}

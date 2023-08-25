@@ -4,31 +4,39 @@ import { HomeSignedOut } from ':/components/home/HomeSignedOut';
 import { getServerSession } from 'next-auth';
 import { GetServerSidePropsContext } from 'next';
 import { authOptions } from './api/auth/[...nextauth]';
-import { WorkspaceData, findWorkspacesByUser } from ':/models/Workspaces';
+import { Workspace, WorkspaceData, findWorkspacesByUser } from ':/models/Workspaces';
+import { Provider } from 'next-auth/providers';
+import { getProviders } from 'next-auth/react';
 
 export type PageHomeProps = {
     user: string | null
     workspaces: WorkspaceData[] | null
+    provider: Provider
 }
-export default function PageHome({ user, workspaces }: PageHomeProps) {
+export default function PageHome({ user, workspaces, provider }: PageHomeProps) {
     if(user) {
         return <HomeSignedIn user={user} initialWorkspaces={workspaces}/>;
     } else {
-        return <HomeSignedOut/>;
+        return <HomeSignedOut provider={provider.id}/>;
     }
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-    const session = await getServerSession(context.req, context.res, authOptions);
-    const user = session?.user?.email ?? null;
-    const workspaces = user ? await findWorkspacesByUser(user) : null;
-
-    console.log(session);
+    const [{ user, workspaces }, providers] = await Promise.all([
+        new Promise<{ user: string | null; workspaces: Workspace[] | null }>(async (resolve) => {
+            const session = await getServerSession(context.req, context.res, authOptions);
+            const user = session?.user?.email ?? null;
+            const workspaces = user ? await findWorkspacesByUser(user) : null;
+            resolve({ user, workspaces });
+        }),
+        getProviders(),
+    ]);
 
     return {
         props: {
-            user: session?.user?.email ?? null,
+            user,
             workspaces: workspaces?.map((workspace) => workspace.data) ?? null,
+            provider: providers!.google,
         },
     };
 }
