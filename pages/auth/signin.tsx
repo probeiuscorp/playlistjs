@@ -17,7 +17,7 @@ export default function PageSignIn({ providers }: InferGetServerSidePropsType<ty
                     <Button onClick={() => signIn(providers.google.id)}>
                         with Google
                     </Button>
-                    <Button onClick={() => signIn(providers.google.id)}>
+                    <Button onClick={() => signIn(providers.github.id)}>
                         with GitHub
                     </Button>
                 </Flex>
