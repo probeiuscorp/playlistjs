@@ -44,7 +44,7 @@ export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
             {...props}
             tabIndex={0}
             className={file.kind === 'note' ? styles.note : styles.file}
-            onDoubleClick={() => openFile(id)}
+            onClick={() => openFile(id)}
             onKeyUp={handleKeyUp}
         >
             <span className={styles.fileHandle} {...handle}>
