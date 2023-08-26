@@ -3,7 +3,7 @@ import styles from './Directory.module.css';
 import { DragDropContext, Draggable, Droppable, OnDragEndResponder } from 'react-beautiful-dnd';
 import { VscHome, VscNewFile, VscNewFolder, VscSave } from 'react-icons/vsc';
 import Tippy from '@tippyjs/react';
-import { useAtom } from 'jotai/react';
+import { useAtom, useAtomValue } from 'jotai/react';
 import { workspace } from ':/state/workspace';
 import produce from 'immer';
 import { DirectoryFile } from './DirectoryFile';
@@ -33,7 +33,8 @@ const saveAction = action((get, set) => {
 export function Directory() {
     const [directory, setDirectory] = useAtom(workspace.directory);
     const addFile = useAction(workspace.addFile);
-    const handleSave = useAction(saveAction);
+    const save = useAction(saveAction);
+    console.log('rerendering Directory');
 
     const addGenericFile = async (kind: FileKind) => {
         const name = await Modals.open(ModalChangeName);
@@ -46,7 +47,7 @@ export function Directory() {
     };
 
     const handleAddFile = () => addGenericFile('file');
-    const handleAddNote = () => addGenericFile('note');    
+    const handleAddNote = () => addGenericFile('note');
     const handleDragEnd: OnDragEndResponder = ({ source, destination }) => {
         if(destination) {
             setDirectory(produce(files => {
@@ -67,8 +68,8 @@ export function Directory() {
     useHotkey('alt + d', () => {
         container.focus();
     });
-    useHotkey('ctrl + s', handleSave);
-    useInterval(handleSave, 3e3);
+    useHotkey('ctrl + s', save);
+    useInterval(save, 3e3);
     
     return (
         <div className={styles.wrapper} ref={container.ref}>
@@ -78,12 +79,8 @@ export function Directory() {
                         <VscHome/>
                     </a>
                 </Tippy>
+                <DirectorySaveButton/>
                 <div className={styles.actionsSpacer}/>
-                <Tippy content="Save" placement="bottom" animation="shift-away">
-                    <span className="action" {...click(handleSave)}>
-                        <VscSave/>
-                    </span>
-                </Tippy>
                 <Tippy content="New file" placement="bottom" animation="shift-away">
                     <span className="action" {...click(handleAddFile)}>
                         <VscNewFile/>
@@ -121,4 +118,21 @@ export function Directory() {
             </DragDropContext>
         </div>
     );
+}
+
+function DirectorySaveButton() {
+    const isDirty = useAtomValue(workspace.isDirty);
+    const save = useAction(saveAction);
+
+    if(isDirty) {
+        return (
+            <Tippy content="Save" placement="bottom" animation="shift-away">
+                <span className="action" {...click(save)} style={{ opacity: 0.5 }}>
+                    <VscSave/>
+                </span>
+            </Tippy>
+        );
+    } else {
+        return null;
+    }
 }
