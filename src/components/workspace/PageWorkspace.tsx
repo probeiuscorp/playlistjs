@@ -7,20 +7,14 @@ import { FileEditor } from './FileEditor';
 import { Directory } from './Directory';
 import styles from './PageWorkspace.module.css';
 import { WorkspaceData } from ':/models/Workspaces';
-import { useHotkey } from ':/hooks/useHotkey';
+import { atom } from 'jotai';
 
+export const workspaceIdAtom = atom(null as any as string);
 export function PageWorkspace({ id, directory }: WorkspaceData) {
     const store = useInitializedStore(store => {
+        store.set(workspaceIdAtom, id);
         store.set(workspace.deserialize, directory);
-    }, [directory]);
-
-    useHotkey('ctrl + s', () => {
-        const directory = store.set(workspace.serialize);
-        fetch(`/api/workspaces/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(directory),
-        });
-    });
+    }, [id, directory]);
 
     return (
         <Page store={store} className={styles.app}>

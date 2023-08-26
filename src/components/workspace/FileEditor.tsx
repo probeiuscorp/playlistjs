@@ -1,7 +1,7 @@
 import { action, merge, useAction } from ':/util';
 import Editor from '@monaco-editor/react';
 import { type editor } from 'monaco-editor/esm/vs/editor/editor.api';
-import { useAtom, useAtomValue } from 'jotai/react';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai/react';
 import React, { useEffect } from 'react';
 import { workspace } from ':/state/workspace';
 import styles from './FileEditor.module.css';
@@ -103,6 +103,7 @@ function FileEditorCode({ file }: FileEditorCodeProps) {
     const full = useAtomValue(info.full);
     const loadTextMate = useAction(actionLoadTextMate);
     const handleEditorWillMount = useAction(actionHandleEditorWillMount);
+    const setIsDirty = useSetAtom(workspace.isDirty);
 
     return (
         <Editor
@@ -114,7 +115,12 @@ function FileEditorCode({ file }: FileEditorCodeProps) {
             options={{ fontSize: 16, padding: { top: 8 }}}
             beforeMount={handleEditorWillMount}
             onMount={loadTextMate}
-            onChange={e => e && setValue(e)}
+            onChange={next => {
+                if(next) {
+                    setValue(value);
+                    setIsDirty(true);
+                }
+            }}
         />
     );
 }

@@ -1,22 +1,39 @@
 import React from 'react';
 import styles from './Directory.module.css';
 import { DragDropContext, Draggable, Droppable, OnDragEndResponder } from 'react-beautiful-dnd';
-import { VscHome, VscNewFile, VscNewFolder } from 'react-icons/vsc';
+import { VscHome, VscNewFile, VscNewFolder, VscSave } from 'react-icons/vsc';
 import Tippy from '@tippyjs/react';
 import { useAtom } from 'jotai/react';
 import { workspace } from ':/state/workspace';
 import produce from 'immer';
 import { DirectoryFile } from './DirectoryFile';
-import { click, useAction } from ':/util';
+import { action, click, useAction } from ':/util';
 import { Modals } from ':/components/modal';
 import { ModalChangeName } from './ModalChangeName';
 import { useHotkey } from ':/hooks/useHotkey'; 
 import { useFocus } from ':/hooks/useFocus';
 import { FileKind } from ':/models/Workspaces';
+import { workspaceIdAtom } from './PageWorkspace';
+import { useInterval } from '@chakra-ui/react';
+
+const saveAction = action((get, set) => {
+    const isDirty = get(workspace.isDirty);
+    if(!isDirty) return;
+
+    const id = get(workspaceIdAtom);
+    const directory = set(workspace.serialize);
+
+    set(workspace.isDirty, false);
+    fetch(`/api/workspaces/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(directory),
+    });
+});
 
 export function Directory() {
     const [directory, setDirectory] = useAtom(workspace.directory);
     const addFile = useAction(workspace.addFile);
+    const handleSave = useAction(saveAction);
 
     const addGenericFile = async (kind: FileKind) => {
         const name = await Modals.open(ModalChangeName);
@@ -29,8 +46,7 @@ export function Directory() {
     };
 
     const handleAddFile = () => addGenericFile('file');
-    const handleAddNote = () => addGenericFile('note');
-
+    const handleAddNote = () => addGenericFile('note');    
     const handleDragEnd: OnDragEndResponder = ({ source, destination }) => {
         if(destination) {
             setDirectory(produce(files => {
@@ -51,6 +67,8 @@ export function Directory() {
     useHotkey('alt + d', () => {
         container.focus();
     });
+    useHotkey('ctrl + s', handleSave);
+    useInterval(handleSave, 3e3);
     
     return (
         <div className={styles.wrapper} ref={container.ref}>
@@ -61,6 +79,11 @@ export function Directory() {
                     </a>
                 </Tippy>
                 <div className={styles.actionsSpacer}/>
+                <Tippy content="Save" placement="bottom" animation="shift-away">
+                    <span className="action" {...click(handleSave)}>
+                        <VscSave/>
+                    </span>
+                </Tippy>
                 <Tippy content="New file" placement="bottom" animation="shift-away">
                     <span className="action" {...click(handleAddFile)}>
                         <VscNewFile/>

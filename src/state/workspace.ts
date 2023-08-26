@@ -12,6 +12,7 @@ export type FileInfo = {
     kind: FileKind
 };
 
+const isDirtyAtom = atom(false);
 const openAtom = atom<ID[]>([]);
 const directoryAtom = atom<ID[]>([]);
 const activeFileAtom = atom<ID | null>(null);
@@ -136,6 +137,7 @@ export const workspace = {
     files: filesFamily,
     content: contentFamily,
     activeFile: activeFileAtom,
+    isDirty: isDirtyAtom,
     openFile,
     closeFile,
     addFile,
