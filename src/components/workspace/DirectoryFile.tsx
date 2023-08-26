@@ -1,11 +1,12 @@
-import { click, Clicker, merge, useAction } from ':/util';
+import { merge, useAction } from ':/util';
 import { Modals } from ':/components/modal';
 import { useAtom } from 'jotai/react';
-import React from 'react';
-import { VscEdit, VscGripper } from 'react-icons/vsc';
+import React, { forwardRef } from 'react';
+import { VscEdit, VscGripper, VscTrash } from 'react-icons/vsc';
 import { ID, workspace } from ':/state/workspace';
 import styles from './DirectoryFile.module.css';
 import { ModalChangeName } from './ModalChangeName';
+import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 
 type DirectoryFileProps = {
     id: ID
@@ -19,9 +20,13 @@ export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
     const openFile = useAction(workspace.openFile);
     const deleteFile = useAction(workspace.deleteFile);
 
+    const deleteSelf = () => {
+        deleteFile(id);
+    };
+
     const handleKeyUp: React.KeyboardEventHandler = e => {
         if(e.key === 'Delete') {
-            deleteFile(id);
+            deleteSelf();
         } else if(e.key === 'Enter') {
             openFile(id);
         } else {
@@ -29,8 +34,7 @@ export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
         }
     };
 
-    const handleEdit: Clicker = async e => {
-        e.stopPropagation();
+    const handleRename = async () => {
         const name = await Modals.open(ModalChangeName);
         if(name) setName(name);
     };
@@ -49,12 +53,28 @@ export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
             <span className={styles.fileName}>
                 {name}
             </span>
-            <span
-                className={merge(styles.fileAction, 'action')}
-                {...click(handleEdit)}
-            >
-                <VscEdit/>
-            </span>
+            <Menu>
+                <MenuButton
+                    as={ActionableMenuButton}
+                    icon={<VscEdit/>}
+                />
+                <MenuList>
+                    <MenuItem icon={<VscEdit size="1.5em"/>} onClick={handleRename}>
+                        Rename
+                    </MenuItem>
+                    <MenuItem icon={<VscTrash size="1.5em"/>} onClick={deleteSelf}>
+                        Delete
+                    </MenuItem>
+                </MenuList>
+            </Menu>
         </div>
     );
 }
+
+const ActionableMenuButton = forwardRef(function Something({ icon, ...props }: any, ref) {
+    return (
+        <span {...props} className={merge(styles.fileAction, 'action')} tabIndex={0} ref={ref}>
+            {icon}
+        </span>
+    );
+});
