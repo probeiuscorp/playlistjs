@@ -34,7 +34,6 @@ export function Directory() {
     const [directory, setDirectory] = useAtom(workspace.directory);
     const addFile = useAction(workspace.addFile);
     const save = useAction(saveAction);
-    console.log('rerendering Directory');
 
     const addGenericFile = async (kind: FileKind) => {
         const name = await Modals.open(ModalChangeName);
