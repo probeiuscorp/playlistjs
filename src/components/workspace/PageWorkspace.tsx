@@ -18,9 +18,9 @@ export function PageWorkspace({ id, directory }: WorkspaceData) {
 
     return (
         <Page store={store} className={styles.app}>
+            <Directory/>
             <FilesOpen/>
             <FileEditor/>
-            <Directory/>
         </Page>
     );
 }
