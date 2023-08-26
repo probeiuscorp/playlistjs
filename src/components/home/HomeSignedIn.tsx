@@ -32,7 +32,16 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
             body: JSON.stringify(newName),
         });
 
-        mutate((last) => last?.filter((workspace) => workspace.id !== id) ?? []);
+        mutate((last) => last?.map((workspace) => {
+            if(workspace.id === id) {
+                return {
+                    ...workspace,
+                    name: newName,
+                }
+            } else {
+                return workspace;
+            }
+        }));
     }
     
     async function deleteWorkspace(id: string) {
@@ -74,7 +83,15 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
                         )
                         : workspaces?.map((workspace) => (
                             <Card key={workspace.id} p={4} variant="outline" direction="row" alignItems="center" gap={2}>
-                                <Editable flexGrow={1} defaultValue={workspace.name} onSubmit={(newName) => renameWorkspace(workspace.id, newName)}>
+                                <Editable
+                                    flexGrow={1}
+                                    defaultValue={workspace.name}
+                                    onSubmit={(newName) => {
+                                        if(workspace.name !== newName) {
+                                            renameWorkspace(workspace.id, newName);
+                                        }
+                                    }}
+                                >
                                     <EditablePreview pl={2}/>
                                     <EditableInput pl={2} pr={2}/>
                                 </Editable>
