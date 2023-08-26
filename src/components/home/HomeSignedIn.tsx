@@ -37,7 +37,7 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
                 return {
                     ...workspace,
                     name: newName,
-                }
+                };
             } else {
                 return workspace;
             }
