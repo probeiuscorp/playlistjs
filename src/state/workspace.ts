@@ -1,5 +1,4 @@
-import { atom } from 'jotai/vanilla';
-import { atomFamily } from 'jotai/vanilla/utils';
+import { atom } from 'jotai';
 import { action, normalizedMap, out } from ':/util';
 import { nanoid } from 'nanoid';
 import { FileKind, WorkspaceDirectory } from ':/models/Workspaces';
@@ -19,9 +18,10 @@ const activeFileAtom = atom<ID | null>(null);
 
 type FileFactory = {
     name: string
+    content: string
     kind: FileKind
 }
-const filesFamily = normalizedMap((id: string, { kind, name }: FileFactory) => {
+const filesFamily = normalizedMap((id: string, { kind, content, name }: FileFactory) => {
     const nameAtom = atom(name);
     const extension = kind === 'file' ? '.ts' : '.md';
     
@@ -37,14 +37,18 @@ const filesFamily = normalizedMap((id: string, { kind, name }: FileFactory) => {
             const name = get(nameAtom);
             return name + extension;
         }),
+        content: atom(content),
         extension,
     });
 });
-const contentFamily = atomFamily((id: ID | null) => atom(''));
 
 const addFile = action((get, set, { name, kind }: { name: string; kind: FileKind }) => {
     const id = nanoid();
-    filesFamily.add(id, { name, kind });
+    filesFamily.add(id, {
+        name,
+        content: '',
+        kind,
+    });
     set(directoryAtom, old => [...old, id]);
     return id;
 });
@@ -53,7 +57,6 @@ const deleteFile = action((get, set, id: ID) => {
 
     const rm = (old: ID[]) => old.filter(out(id));
     filesFamily.remove(id);
-    contentFamily.remove(id);
     set(directoryAtom, rm);
     set(openAtom, rm);
 });
@@ -102,7 +105,7 @@ const serialize = action((get): WorkspaceDirectory => {
             const file = get(filesFamily(id));
             const kind = file.kind;
             const path = get(file.path);
-            const content = get(contentFamily(id));
+            const content = get(file.content);
             const isEntry = path === './main';
 
             return {
@@ -124,18 +127,17 @@ const deserialize = action((get, set, { open, openFiles, files }: WorkspaceDirec
         const name = file.path.slice(2);
         filesFamily.add(file.id, {
             name,
+            content: file.content,
             kind: file.kind,
         });
-        set(directoryAtom, directory => [...directory, file.id]);
-        set(contentFamily(file.id), file.content);
     }
+    set(directoryAtom, files.map((file) => file.id));
 });
 
 export const workspace = {
     open: openAtom,
     directory: directoryAtom,
     files: filesFamily,
-    content: contentFamily,
     activeFile: activeFileAtom,
     isDirty: isDirtyAtom,
     openFile,

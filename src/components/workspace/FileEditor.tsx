@@ -2,7 +2,7 @@ import { action, merge, useAction } from ':/util';
 import Editor from '@monaco-editor/react';
 import { type editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { useAtomValue, useSetAtom, useStore } from 'jotai/react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { workspace } from ':/state/workspace';
 import styles from './FileEditor.module.css';
 // @ts-ignore
@@ -59,7 +59,7 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
         const path = get(file.full);
         const uri = monaco.Uri.parse(path);
         if(monaco.editor.getModel(uri) === null) {
-            const content = get(workspace.content(id));
+            const content = get(file.content);
             const language = file.kind === 'file'
                 ? 'typescript'
                 : 'markdown';
@@ -75,7 +75,7 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
 });
 
 export function FileEditor() {
-    const file = useAtomValue(workspace.activeFile);
+    const id = useAtomValue(workspace.activeFile);
     const loadGrammar = useAction(actionLoadGrammar);
 
     useEffect(() => {
@@ -84,26 +84,27 @@ export function FileEditor() {
     }, []);
 
     return (
-        file === null
+        id === null
             ? <div className={merge(styles.container, styles.noFile)}/>
             : (
                 <div className={styles.container}>
-                    <FileEditorCode file={file}/>
+                    <FileEditorCode id={id}/>
                 </div>
             )
     );
 }
 
 type FileEditorCodeProps = {
-    file: string
+    id: string
 };
-function FileEditorCode({ file }: FileEditorCodeProps) {
+function FileEditorCode({ id }: FileEditorCodeProps) {
     const store = useStore();
-    const info = useAtomValue(workspace.files(file));
-    const contentAtom = workspace.content(file);
-    const defaultValue = useRef(store.get(contentAtom));
-    const setValue = useSetAtom(contentAtom);
-    const full = useAtomValue(info.full);
+    const file = useAtomValue(workspace.files(id));
+    // const contentAtom = workspace.content(file);
+    // const defaultValue = useRef(store.get(contentAtom));
+    const defaultValue = store.get(file.content);
+    const setValue = useSetAtom(file.content);
+    const full = useAtomValue(file.full);
     const loadTextMate = useAction(actionLoadTextMate);
     const handleEditorWillMount = useAction(actionHandleEditorWillMount);
     const setIsDirty = useSetAtom(workspace.isDirty);
@@ -113,8 +114,8 @@ function FileEditorCode({ file }: FileEditorCodeProps) {
             saveViewState
             theme="vs-dark"
             path={full}
-            defaultValue={defaultValue.current}
-            defaultLanguage={info.kind === 'file' ? 'typescript' : 'markdown'}
+            defaultValue={defaultValue}
+            defaultLanguage={file.kind === 'file' ? 'typescript' : 'markdown'}
             options={{ fontSize: 16, padding: { top: 8 }}}
             beforeMount={handleEditorWillMount}
             onMount={loadTextMate}
