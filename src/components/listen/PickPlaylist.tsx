@@ -1,3 +1,4 @@
+import { Button, Flex } from '@chakra-ui/react';
 import React from 'react';
 
 type Song = string | null;
@@ -7,12 +8,12 @@ export type PickPlaylistProps = {
 }
 export function PickPlaylist({ playlists, pick }: PickPlaylistProps) {
     return (
-        <div>
+        <Flex gap={2}>
             {playlists.map((song) => (
-                <div key={song} onClick={() => pick(song)}>
+                <Button key={song} onClick={() => pick(song)}>
                     {song ?? 'Default'}
-                </div>
+                </Button>
             ))}
-        </div>
+        </Flex>
     );
 }
