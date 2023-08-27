@@ -12,7 +12,7 @@ export type HomeSignedInProps = {
     initialWorkspaces: WorkspaceData[] | null
 }
 export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
-    const { data: loadedWorkspaces, error, isLoading, mutate } = useFetch<WorkspaceData[]>('/api/workspaces');
+    const { data: loadedWorkspaces, mutate } = useFetch<WorkspaceData[]>('/api/workspaces');
     const workspaces = loadedWorkspaces ?? initialWorkspaces;
 
     async function addWorkspace() {

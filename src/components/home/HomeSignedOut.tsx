@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page } from '../Page';
-import { Button, ButtonGroup, Flex, Heading, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, Heading, Text, VStack } from '@chakra-ui/react';
 import { signIn } from 'next-auth/react';
 import { VscGithub } from 'react-icons/vsc';
 import { Code } from './Code';
@@ -62,13 +62,16 @@ export function HomeSignedOut({ provider }: HomeSignedOutProps) {
 
             <Flex
                 direction="column"
-                minWidth="42em"
-                maxWidth="max-content"
-                ml="auto"
-                mr="auto"
-                mt="2em"
+                mt="1em"
+                overflowX="auto"
             >
-                <Code code={code}/>
+                <Box
+                    margin="0 auto"
+                    minWidth="42em"
+                    maxWidth="max-content"
+                >
+                    <Code code={code}/>
+                </Box>
             </Flex>
         </Page>
     );
