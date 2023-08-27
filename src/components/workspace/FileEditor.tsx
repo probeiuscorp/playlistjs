@@ -1,8 +1,8 @@
 import { action, merge, useAction } from ':/util';
 import Editor from '@monaco-editor/react';
 import { type editor } from 'monaco-editor/esm/vs/editor/editor.api';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai/react';
-import React, { useEffect } from 'react';
+import { useAtomValue, useSetAtom, useStore } from 'jotai/react';
+import React, { useEffect, useRef } from 'react';
 import { workspace } from ':/state/workspace';
 import styles from './FileEditor.module.css';
 // @ts-ignore
@@ -98,8 +98,11 @@ type FileEditorCodeProps = {
     file: string
 };
 function FileEditorCode({ file }: FileEditorCodeProps) {
+    const store = useStore();
     const info = useAtomValue(workspace.files(file));
-    const [value, setValue] = useAtom(workspace.content(file));
+    const contentAtom = workspace.content(file);
+    const defaultValue = useRef(store.get(contentAtom));
+    const setValue = useSetAtom(contentAtom);
     const full = useAtomValue(info.full);
     const loadTextMate = useAction(actionLoadTextMate);
     const handleEditorWillMount = useAction(actionHandleEditorWillMount);
@@ -110,14 +113,14 @@ function FileEditorCode({ file }: FileEditorCodeProps) {
             saveViewState
             theme="vs-dark"
             path={full}
-            value={value}
+            defaultValue={defaultValue.current}
             defaultLanguage={info.kind === 'file' ? 'typescript' : 'markdown'}
             options={{ fontSize: 16, padding: { top: 8 }}}
             beforeMount={handleEditorWillMount}
             onMount={loadTextMate}
             onChange={next => {
                 if(next) {
-                    setValue(value);
+                    setValue(next);
                     setIsDirty(true);
                 }
             }}
