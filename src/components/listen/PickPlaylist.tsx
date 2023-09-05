@@ -8,7 +8,7 @@ export type PickPlaylistProps = {
 }
 export function PickPlaylist({ playlists, pick }: PickPlaylistProps) {
     return (
-        <Flex gap={2}>
+        <Flex gap={2} flexWrap="wrap">
             {playlists.map((song) => (
                 <Button key={song} onClick={() => pick(song)}>
                     {song ?? 'Default'}
