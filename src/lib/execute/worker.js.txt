@@ -1,4 +1,4 @@
-import { shuffle as $$$shuffle, split as $$$split, rehead as $$$rehead, mapsort as $$$mapsort, pick as $$$pick, fromSongLike } from './testable';
+import { shuffle, split, rehead, mapsort, pick, fromSongLike } from './testable';
 
 Set.prototype.toArray = function() {
     return Array.from(this);
@@ -9,23 +9,23 @@ Map.prototype.toArray = function() {
 };
 
 Array.prototype.shuffle = function() {
-    return $$$shuffle(this);
+    return shuffle(this);
 };
 
 Array.prototype.split = function(index) {
-    return $$$split(this, index);
+    return split(this, index);
 };
 
 Array.prototype.rehead = function(index) {
-    return $$$rehead(this, index);
+    return rehead(this, index);
 };
 
 Array.prototype.mapsort = function(...args) {
-    return $$$mapsort(this, ...args);
+    return mapsort(this, ...args);
 };
 
 Array.prototype.pick = function(...args) {
-    return $$$pick(this, ...args);
+    return pick(this, ...args);
 };
 
 const $$$oldRandom = Math.random;
