@@ -1,3 +1,8 @@
+import { nanoid } from 'nanoid';
+
+export const makeID = (_object: object) => nanoid();
+export const getID = stable(makeID);
+
 export function stable<T extends object, V>(make: (item: T) => V) {
     const cache = new WeakMap<T, V>();
     return (item: T) => {
