@@ -21,16 +21,15 @@ declare function chance(decimal: number): boolean;
  */
 declare function silence(durationSeconds: number): song;
 
-type song = { readonly __dontdependonthis: true };
 type YouTubeVideo = {
     id: string
     start?: number
     end?: number
 };
-type SongLike = song | string | YouTubeVideo;
-declare function fromSongLike(songLike: SongLike): song;
+type song = string | YouTubeVideo;
+declare function fromSongLike(songLike: song): song;
 
-type playlist = Iterable<SongLike> | (() => Iterable<SongLike>);
+type playlist = Iterable<song> | (() => Iterable<song>);
 declare const Playlist: {
     yield(playlist: playlist): void
     yield(name: string, playlist: playlist): void
