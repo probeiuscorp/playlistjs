@@ -1,3 +1,5 @@
+import { Playable } from ':/components/listen/Playable';
+
 export function pick<T>(array: T[], a?: any, b?: any) {
     if(typeof a === 'number') {
         let sum = 0;
@@ -109,3 +111,51 @@ export function mapsort<T, R>(
 
     return final.map((item) => item.original);
 }
+
+export function fromSongLike(songLike: unknown): Playable | undefined {
+    // @ts-ignore
+    if(songLike === undefined) return undefined;
+    let playable: Playable;
+    if(typeof songLike === 'string') {
+        const [id, paramString = ''] = songLike.split('?', 2);
+        const params = new URLSearchParams(paramString);
+        const getNumber = (key: string) => {
+            const value = params.get(key);
+            if(value === null) return undefined;
+            const asNumber = Number(value);
+            if(isNaN(asNumber)) throw new Error(`fromSongLike("${songLike}"): url param "${key}" is not a valid number`);
+            return asNumber;
+        };
+        playable = {
+            kind: 'youtube-video',
+            id,
+            start: getNumber('start'),
+            end: getNumber('end'),
+        };
+    } else if(typeof songLike === 'object' && songLike !== null) {
+        if(fromSongLike.ALREADY_SONG in songLike) return songLike as any;
+        const id = (songLike as any)['id'];
+        if(typeof id === 'string') {
+            const getNumber = (key: string) => {
+                const value = (songLike as any)[key];
+                if(typeof value === 'undefined') return undefined;
+                if(typeof value !== 'number') throw new Error(`fromSongLike(songLike): songLike.${key} should be a number`);
+                return value;
+            };
+            playable = {
+                kind: 'youtube-video',
+                id,
+                start: getNumber('start'),
+                end: getNumber('end'),  
+            };
+        } else {
+            throw new Error('fromSongLike(songLike): "id" in songLike is not optional');
+        }
+    } else {
+        throw new Error(`fromSongLike(${songLike}) is not valid: call with a string or an object`);
+    }
+    // @ts-ignore
+    playable[fromSongLike.ALREADY_SONG] = true;
+    return playable;
+}
+fromSongLike.ALREADY_SONG = Symbol('fromSongLike.ALREADY_SONG');

@@ -1,32 +1,37 @@
-import { Box, IconButton } from '@chakra-ui/react';
+import { Box, Center, IconButton } from '@chakra-ui/react';
 import React from 'react';
 import { VscDebugContinue } from 'react-icons/vsc';
-import YouTube from 'react-youtube';
 import styles from './ListenListening.module.css';
 import { YouTubeThumbnail } from './YouTubeThumbnail';
+import { Play, Playable } from './Playable';
 
-export type ListenListeningProps = {
-    tag: unknown
-    video: string | undefined
-    upcoming: string | undefined
+export function formatDuration(seconds: number) {
+    if(seconds === 0) {
+        return '0s';
+    } else if(seconds < 10) {
+        return seconds.toFixed(1) + 's';
+    } else if(seconds < 60) {
+        return seconds.toFixed(0) + 's';
+    } else {
+        const minutes = Math.floor(seconds / 60);
+        return `${minutes}m ${Math.floor(seconds % 60)}s`;
+    }
+}
+
+export type ListenListeningProps = React.PropsWithChildren<{
+    playable: Playable
+    upcoming: Playable | undefined
     next(): void
     reject(): void
-}
-export function ListenListening({ tag, video, upcoming, next, reject }: ListenListeningProps) {
+}>;
+export function ListenListening({ playable, upcoming, next, reject }: ListenListeningProps) {
     return (
         <div className={styles.container}>
             <div className={styles.videoContainer}>
                 <Box className={styles.video}>
-                    <YouTube
-                        style={{ height: '100%' }}
-                        videoId={video}
-                        onEnd={next}
-                        opts={{
-                            playerVars: {
-                                autoplay: 1,
-                            },
-                        }}
-                        key={String(tag)}
+                    <Play
+                        playable={playable}
+                        onDone={next}
                     />
                 </Box>
                 <IconButton
@@ -40,17 +45,25 @@ export function ListenListening({ tag, video, upcoming, next, reject }: ListenLi
                 <Box textAlign="center">
                     Next Up
                 </Box>
-                <div className={styles.upcomingContainer}>
-                    <div className={styles.upcoming}>
-                        <YouTubeThumbnail video={upcoming ?? ''}/>
+                {upcoming && (
+                    <div className={styles.upcomingContainer}>
+                        <div className={styles.upcoming}>
+                            {(true && upcoming.kind === 'youtube-video') ? (
+                                <YouTubeThumbnail video="dQw4w9WgXcQ"/>
+                            ) : (
+                                <Center aspectRatio="4 / 3" minH="100%" h={180} fontSize="lg" bg="gray.600" rounded="md">
+                                    {formatDuration(upcoming.duration / 1e3)}
+                                </Center>
+                            )}
+                        </div>
+                        <IconButton
+                            aria-label="Skip upcoming"
+                            icon={<VscDebugContinue/>}
+                            colorScheme="teal"
+                            onClick={reject}
+                        />
                     </div>
-                    <IconButton
-                        aria-label="Skip upcoming"
-                        icon={<VscDebugContinue/>}
-                        colorScheme="teal"
-                        onClick={reject}
-                    />
-                </div>
+                )}
             </div>
         </div>
     );

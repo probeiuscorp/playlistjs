@@ -12,6 +12,9 @@ export function PageListen({ id }: WorkspaceData) {
     return (
         <Page title="playback">
             <Flex p={8} flexDirection="column" minHeight="100vh">
+                {controller.stage === 'spawning' && (
+                    'Loading...'
+                )}
                 {controller.stage === 'pick' && (
                     controller.playlists ? (
                         <PickPlaylist
@@ -21,13 +24,16 @@ export function PageListen({ id }: WorkspaceData) {
                     ) : 'Loading...'
                 )}
                 {controller.stage === 'picked' && (
-                    <ListenListening
-                        video={controller.song}
-                        upcoming={controller.next}
-                        next={controller.cycle}
-                        reject={controller.rejectNext}
-                        tag={controller.key}
-                    />
+                    controller.song !== undefined ? (
+                        <ListenListening
+                            playable={controller.song}
+                            upcoming={controller.next}
+                            next={controller.cycle}
+                            reject={controller.rejectNext}
+                        />
+                    ) : (
+                        'Playlist ended'
+                    )
                 )}
             </Flex>
         </Page>

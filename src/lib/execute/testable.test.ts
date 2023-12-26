@@ -1,13 +1,8 @@
-import { split, rehead, mapsort, shuffle, pick } from './testable';
+import { split, rehead, mapsort, shuffle, fromSongLike } from './testable';
 import assert from 'node:assert/strict';
 
 describe('testable', () => {
-    it('Array.prototype.pick', () => {
-        console.log(pick([1, 2, 3, 4]));
-        console.log(pick([1, 2, 3, 4], 2));
-        console.log(pick([1, 2, 3, 4], (n: number) => n));
-        console.log(pick([1, 2, 3, 4], 2, (n: number) => n));
-    });
+    it('Array.prototype.pick');
 
     it('Array.prototype.shuffle', () => {
         const counts: Record<string, number> = {
@@ -74,6 +69,76 @@ describe('testable', () => {
                 'second',
                 'first',
             ]);
+        });
+    });
+
+    describe('fromSongLike', () => {
+        const id = 'dQw4w9WgXcQ';
+        const roundTripped = (data: unknown) => JSON.parse(JSON.stringify(fromSongLike(data)));
+        it('should return undefined for undefined', () => {
+            assert.equal(fromSongLike(undefined), undefined);
+        });
+
+        it('should return a youtube video for a string', () => {
+            assert.deepEqual(roundTripped(id), {
+                kind: 'youtube-video',
+                id,
+            });
+        });
+
+        it('should set a start and an end from the query string', () => {
+            assert.deepEqual(roundTripped(`${id}?start=2`), {
+                kind: 'youtube-video',
+                id,
+                start: 2,
+            });
+        });
+
+        it('should reject non-number starts and ends in query strings', () => {
+            assert.throws(() => {
+                roundTripped(`${id}?start=good`);
+            });
+        });
+
+        it('should return a youtube video from an object', () => {
+            assert.deepEqual(roundTripped({ id }), { kind: 'youtube-video', id });
+        });
+
+        it('should set a start and an end from an object', () => {
+            assert.deepEqual(roundTripped({
+                id,
+                start: 2,
+                end: 8,
+            }), {
+                kind: 'youtube-video',
+                id,
+                start: 2,
+                end: 8,
+            });
+        });
+
+        it('should reject random inputs', () => {
+            [null, 12, false].forEach((input) => {
+                assert.throws(() => fromSongLike(input));
+            });
+        });
+
+        it('should reject objects without an id', () => {
+            assert.throws(() => fromSongLike({ start: 2 }));
+        });
+
+        it('should return silence as-is', () => {
+            const silence = {
+                [fromSongLike.ALREADY_SONG]: true,
+                kind: 'silence',
+                duration: 15e3,
+            };
+            assert.equal(fromSongLike(silence), silence);
+        });
+
+        it('should be indempotent', () => {
+            const song = fromSongLike(id);
+            assert.equal(song, fromSongLike(song));
         });
     });
 });

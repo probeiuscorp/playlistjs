@@ -6,7 +6,7 @@
 /* eslint @typescript-eslint/no-unused-vars: 0 */
 
 /**
- * 
+ * A chance of 0 never happens, a chance of 1 always happens.
  * 
  * @example
  * ```javascript
@@ -16,8 +16,21 @@
  */
 declare function chance(decimal: number): boolean;
 
-type song = string;
-type playlist = Iterable<song> | (() => Iterable<song>);
+/**
+ * In seconds
+ */
+declare function silence(durationSeconds: number): song;
+
+type song = { readonly __dontdependonthis: true };
+type YouTubeVideo = {
+    id: string
+    start?: number
+    end?: number
+};
+type SongLike = song | string | YouTubeVideo;
+declare function fromSongLike(songLike: SongLike): song;
+
+type playlist = Iterable<SongLike> | (() => Iterable<SongLike>);
 declare const Playlist: {
     yield(playlist: playlist): void
     yield(name: string, playlist: playlist): void

@@ -1,7 +1,9 @@
+import { Playable } from './Playable';
+
 export type Controller = ReturnType<typeof createController>;
 export function createController(id: string) {
     const worker = new Worker(`/api/worker/${id}`);
-    const listeners = new Set<(song: string) => void>();
+    const listeners = new Set<(song: Playable) => void>();
 
     const pendingPlaylists = new Promise<(string | null)[]>((resolve) => {
         worker.onmessage = (message) => {
@@ -26,7 +28,7 @@ export function createController(id: string) {
                 playlist,
             }));
         },
-        pull: () => new Promise<string>((resolve) => {
+        pull: () => new Promise<Playable>((resolve) => {
             worker.postMessage('{"type":"pull"}');
             listeners.add(resolve);
         }),

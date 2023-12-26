@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Controller, createController } from './controller';
+import { Playable } from './Playable';
 
 export function useController(id: string) {
     const [key, setKey] = useState(false);
-    const [song, setSong] = useState<string | undefined>(undefined);
-    const [next, setNext] = useState<string | undefined>(undefined);
+    const [song, setSong] = useState<Playable | undefined>(undefined);
+    const [next, setNext] = useState<Playable | undefined>(undefined);
     const [stage, setStage] = useState<'spawning' | 'pick' | 'picked'>('spawning');
     const controller = useRef<Controller>();
     const [playlists, setPlaylists] = useState<(string | null)[] | undefined>(undefined);

@@ -1,7 +1,9 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 export function useReffed<T>(v: T): { readonly current: T } {
     const ref = useRef<T>();
-    ref.current = v;
+    useEffect(() => {
+        ref.current = v;
+    });
     return ref as any;
 }
