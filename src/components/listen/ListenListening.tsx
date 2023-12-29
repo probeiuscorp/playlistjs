@@ -51,7 +51,7 @@ export function ListenListening({ playable, upcoming, next, reject }: ListenList
                             {(true && upcoming.kind === 'youtube-video') ? (
                                 <YouTubeThumbnail video={upcoming.id}/>
                             ) : (
-                                <Center aspectRatio="4 / 3" minH="100%" h={180} fontSize="lg" bg="gray.600" rounded="md">
+                                <Center aspectRatio="16 / 11" minH="100%" h={180} fontSize="lg" bg="gray.700" rounded="md">
                                     {formatDuration(upcoming.duration / 1e3)}
                                 </Center>
                             )}

@@ -61,7 +61,7 @@ export function PlaySilence({ silence, onDone }: PlaySilenceProps) {
     }, [silence]);
 
     return (
-        <Center fontSize="4xl" h="full" bg="gray.600" rounded="md" flexDirection="column" >
+        <Center fontSize="4xl" h="full" bg="gray.700" rounded="md" flexDirection="column" >
             {countdown}
         </Center>
     );
