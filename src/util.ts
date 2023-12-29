@@ -8,6 +8,9 @@ type HasFunctions<T extends PropertyKey> = Record<T, () => void>;
 export const stopPropagation = (e: HasFunctions<'stopPropagation'>) => e.stopPropagation();
 export const preventDefault = (e: HasFunctions<'preventDefault'>) => e.preventDefault();
 export const consumeEvent = (e: HasFunctions<'stopPropagation' | 'preventDefault'>) => (e.stopPropagation(), e.preventDefault());
+export const toggle = (value: boolean) => !value;
+export const increment = (value: number) => value + 1;
+export const decrement = (value: number) => value - 1;
 
 export const DROP = Symbol('map()#DROP');
 export type DROP = typeof DROP;
