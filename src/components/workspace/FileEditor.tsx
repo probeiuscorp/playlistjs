@@ -71,6 +71,7 @@ const actionHandleEditorWillMount = action((get, set, monaco: Monaco) => {
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
         strict: true,
         lib: ['es6'],
+        target: monaco.languages.typescript.ScriptTarget.ESNext,
     });
 });
 
