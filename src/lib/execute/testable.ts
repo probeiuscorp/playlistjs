@@ -113,7 +113,6 @@ export function mapsort<T, R>(
 }
 
 export function fromSongLike(songLike: unknown): Playable | undefined {
-    // @ts-ignore
     if(songLike === undefined) return undefined;
     let playable: Playable;
     if(typeof songLike === 'string') {
