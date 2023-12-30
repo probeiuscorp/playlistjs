@@ -11,6 +11,8 @@ export const consumeEvent = (e: HasFunctions<'stopPropagation' | 'preventDefault
 export const toggle = (value: boolean) => !value;
 export const increment = (value: number) => value + 1;
 export const decrement = (value: number) => value - 1;
+export const invoke = (fn: () => void) => void fn();
+export const invokeWith = <TArgs extends unknown[]>(...args: TArgs) => (fn: (...args: TArgs) => void) => void fn(...args);
 
 export const DROP = Symbol('map()#DROP');
 export type DROP = typeof DROP;
