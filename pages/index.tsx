@@ -4,7 +4,7 @@ import { HomeSignedOut } from ':/components/home/HomeSignedOut';
 import { getServerSession } from 'next-auth';
 import { GetServerSidePropsContext } from 'next';
 import { authOptions } from './api/auth/[...nextauth]';
-import { Workspace, WorkspaceData, findWorkspacesByUser } from ':/models/Workspaces';
+import { WorkspaceData, findWorkspacesByUser } from ':/models/Workspaces';
 import { Provider } from 'next-auth/providers';
 import { getProviders } from 'next-auth/react';
 
@@ -23,12 +23,12 @@ export default function PageHome({ user, workspaces, provider }: PageHomeProps) 
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const [{ user, workspaces }, providers] = await Promise.all([
-        new Promise<{ user: string | null; workspaces: Workspace[] | null }>(async (resolve) => {
+        (async () => {
             const session = await getServerSession(context.req, context.res, authOptions);
             const user = session?.user?.email ?? null;
             const workspaces = user ? await findWorkspacesByUser(user) : null;
-            resolve({ user, workspaces });
-        }),
+            return { user, workspaces };
+        })(),
         getProviders(),
     ]);
 
