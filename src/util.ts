@@ -62,14 +62,7 @@ export function attempt(executor: () => any): any {
     try {
         const r = executor();
         if(r instanceof Promise) {
-            return new Promise(async resolve => {
-                try {
-                    const v = await r;
-                    resolve([v, undefined]);
-                } catch(e) {
-                    resolve([undefined, e]);
-                }
-            });
+            return r.then((value) => [value, undefined], (reason) => [undefined, reason]);
         } else {
             return [r, undefined];
         }
