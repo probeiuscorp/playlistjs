@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { Controller, createController } from './controller';
 import { Playable } from './Playable';
 
+export type ControllerStage =
+    | { type: 'spawning' | 'picked' }
+    | { type: 'pick'; playlists: (string | null)[] }
 export function useController(id: string) {
     const [key, setKey] = useState(false);
     const [song, setSong] = useState<Playable | undefined>(undefined);
     const [next, setNext] = useState<Playable | undefined>(undefined);
-    const [stage, setStage] = useState<'spawning' | 'pick' | 'picked'>('spawning');
+    const [stage, setStage] = useState<ControllerStage>({ type: 'spawning' });
     const controller = useRef<Controller>();
-    const [playlists, setPlaylists] = useState<(string | null)[] | undefined>(undefined);
 
     useEffect(() => {
         let hasBeenCanceled = false;
@@ -18,8 +20,10 @@ export function useController(id: string) {
             const playlists = await controller.getPlaylists();
             if(hasBeenCanceled) return;
 
-            setStage('pick');
-            setPlaylists(playlists);
+            setStage({
+                type: 'pick',
+                playlists,
+            });
         })(controller);
 
         return () => {
@@ -33,7 +37,6 @@ export function useController(id: string) {
         song,
         next,
         stage,
-        playlists,
         async rejectNext() {
             const next = await controller.current!.pull();
             setNext(next);
@@ -46,7 +49,7 @@ export function useController(id: string) {
         },
         async setPlaylist(playlist: string | null) {
             controller.current!.setPlaylist(playlist);
-            setStage('picked');
+            setStage({ type: 'picked' });
             
             const first = await controller.current!.pull();
             setSong(first);

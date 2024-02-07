@@ -8,22 +8,21 @@ import { PickPlaylist } from './PickPlaylist';
 
 export function PageListen({ id }: WorkspaceData) {
     const controller = useController(id);
+    const stage = controller.stage;
 
     return (
         <Page title="playback">
             <Flex p={8} flexDirection="column" minHeight="100vh">
-                {controller.stage === 'spawning' && (
+                {stage.type === 'spawning' && (
                     'Loading...'
                 )}
-                {controller.stage === 'pick' && (
-                    controller.playlists ? (
-                        <PickPlaylist
-                            playlists={controller.playlists}
-                            pick={controller.setPlaylist}
-                        />
-                    ) : 'Loading...'
+                {stage.type === 'pick' && (
+                    <PickPlaylist
+                        playlists={stage.playlists}
+                        pick={controller.setPlaylist}
+                    />
                 )}
-                {controller.stage === 'picked' && (
+                {stage.type === 'picked' && (
                     controller.song !== undefined ? (
                         <ListenListening
                             playable={controller.song}
