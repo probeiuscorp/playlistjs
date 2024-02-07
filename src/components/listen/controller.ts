@@ -1,11 +1,23 @@
 import { Playable } from './Playable';
 
+export type WorkspaceBuildFailure = {
+    location?: {
+        file: string
+        line: number
+        column: number
+    }
+    message: string
+}[];
+export type ControllerError =
+    | { type: 'unexpected'; message?: string }
+    | { type: 'expected'; errors: WorkspaceBuildFailure }
+
 export type Controller = ReturnType<typeof createController>;
 export function createController(id: string) {
     const worker = new Worker(`/api/worker/${id}`);
     const listeners = new Set<(song: Playable) => void>();
 
-    const pendingPlaylists = new Promise<(string | null)[]>((resolve) => {
+    const pendingPlaylists = new Promise<(string | null)[]>((resolve, reject) => {
         worker.onmessage = (message) => {
             const msg = JSON.parse(message.data);
             if(msg.type === 'ready') {
@@ -16,12 +28,17 @@ export function createController(id: string) {
                     listener(msg.song);
                 }
                 listeners.clear();
+            } else if(msg.type === 'error') {
+                reject({ type: 'expected', errors: msg.reason as WorkspaceBuildFailure } satisfies ControllerError);
             }
         };
     });
+    const pendingWorkersFail = new Promise<never>((_resolve, reject) => {
+        worker.addEventListener('error', ({ error, message }) => reject({ type: 'unexpected', message: message ?? (error ? String(error) : undefined) } satisfies ControllerError));
+    });
 
     return {
-        getPlaylists: () => pendingPlaylists,
+        getPlaylists: () => Promise.race([pendingPlaylists, pendingWorkersFail]),
         setPlaylist(playlist: string | null) {
             worker.postMessage(JSON.stringify({
                 type: 'play',

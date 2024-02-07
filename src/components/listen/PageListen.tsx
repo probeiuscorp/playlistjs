@@ -3,8 +3,39 @@ import { Page } from '../Page';
 import { WorkspaceData } from ':/models/Workspaces';
 import { useController } from './useController';
 import { ListenListening } from './ListenListening';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import { PickPlaylist } from './PickPlaylist';
+import { ControllerError } from './controller';
+
+function LoadingError({ error }: { error: ControllerError}) {
+    return (
+        <Flex bg="#66000060" p={4} rounded="sm" borderBottom="1px" borderBottomColor="red.200" flexDirection="column" gap={3}>
+            {error.type === 'unexpected' ? (
+                <div>
+                    <Text fontFamily="Manrope">
+                        Unexpected error while trying to build:
+                    </Text>
+                    {error.message ?? 'Could not reach server'}
+                </div>
+            ) : (
+                error.errors.map(({ message, location }, i) => (
+                    <div key={i}>
+                        <Text fontFamily="Manrope">
+                            {location ? (
+                                <>Error at {location.file}, line {location.line} col {location.column}:</>
+                            ) : (
+                                <>Error:</>
+                            )}
+                        </Text>
+                        <pre>
+                            {message}
+                        </pre>
+                    </div>
+                ))
+            )}
+        </Flex>
+    );
+}
 
 export function PageListen({ id }: WorkspaceData) {
     const controller = useController(id);
@@ -15,6 +46,9 @@ export function PageListen({ id }: WorkspaceData) {
             <Flex p={8} flexDirection="column" minHeight="100vh">
                 {stage.type === 'spawning' && (
                     'Loading...'
+                )}
+                {stage.type === 'error' && (
+                    <LoadingError error={stage.reason}/>
                 )}
                 {stage.type === 'pick' && (
                     <PickPlaylist

@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Controller, createController } from './controller';
+import { Controller, ControllerError, createController } from './controller';
 import { Playable } from './Playable';
+import { attempt } from ':/util';
 
 export type ControllerStage =
     | { type: 'spawning' | 'picked' }
     | { type: 'pick'; playlists: (string | null)[] }
+    | { type: 'error'; reason: ControllerError }
 export function useController(id: string) {
     const [key, setKey] = useState(false);
     const [song, setSong] = useState<Playable | undefined>(undefined);
@@ -16,13 +18,20 @@ export function useController(id: string) {
         let hasBeenCanceled = false;
         const controller = controllerRef.current = createController(id);
         void async function() {
-            const playlists = await controller.getPlaylists();
+            const [playlists, error] = await attempt(controller.getPlaylists);
             if(hasBeenCanceled) return;
 
-            setStage({
-                type: 'pick',
-                playlists,
-            });
+            if(playlists) {
+                setStage({
+                    type: 'pick',
+                    playlists,
+                });
+            } else {
+                setStage({
+                    type: 'error',
+                    reason: error as ControllerError,
+                });
+            }
         }();
         return () => {
             hasBeenCanceled = true;

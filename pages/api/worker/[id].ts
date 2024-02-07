@@ -5,7 +5,8 @@ import testable from ':/lib/execute/testable';
 import worker from ':/lib/execute/worker.js.txt';
 import { findWorkspaceById, workspaces } from ':/models/Workspaces';
 import { bundle } from ':/lib/bundle';
-import esbuild from 'esbuild';
+import esbuild, { BuildFailure } from 'esbuild';
+import { WorkspaceBuildFailure } from ':/components/listen/controller';
 
 const workerSource: string = testable.replace(/export /g, '') + worker.slice(worker.indexOf('\n'));
 const minifiedWorker = esbuild.transformSync(workerSource, {
@@ -27,16 +28,35 @@ export default handler(async (req, res, getUser) => {
     if(workspace === null)
         return void res.status(404).send(`No workspace could be found by id="${id}"`);
 
-    const code = workspace.code ?? await bundle(workspace.data.directory);
-    res.send(workerBefore + code + workerAfter);
-    
-    if(workspace.code === undefined) {
-        await workspaces.findOneAndUpdate({
-            'data.id': id,
-        }, {
-            $set: {
-                code,
-            },
-        });
+    try {
+        const code = workspace.code ?? await bundle(workspace.data.directory);
+        res.send(workerBefore + code + workerAfter);
+        
+        if(workspace.code === undefined) {
+            await workspaces.findOneAndUpdate({
+                'data.id': id,
+            }, {
+                $set: {
+                    code,
+                },
+            });
+        }
+    } catch(caught) {
+        try {
+            const failure = caught as BuildFailure;
+            res.send(`postMessage(${JSON.stringify(JSON.stringify({
+                type: 'error',
+                reason: failure.errors.map(({ text, location }) => ({
+                    location: location ? {
+                        file: location.file.slice(location.file.indexOf(':') + 1),
+                        line: location.line,
+                        column: location.column,
+                    } : undefined,
+                    message: text,
+                })) satisfies WorkspaceBuildFailure,
+            }))})`);
+        } catch {
+            res.status(500).send('Internal Server Error');
+        }
     }
 });
