@@ -10,13 +10,12 @@ export function useController(id: string) {
     const [song, setSong] = useState<Playable | undefined>(undefined);
     const [next, setNext] = useState<Playable | undefined>(undefined);
     const [stage, setStage] = useState<ControllerStage>({ type: 'spawning' });
-    const controller = useRef<Controller>();
+    const controllerRef = useRef<Controller>();
 
     useEffect(() => {
         let hasBeenCanceled = false;
-        (async function(ref) {
-            const controller = createController(id);
-            ref.current = controller;
+        const controller = controllerRef.current = createController(id);
+        void async function() {
             const playlists = await controller.getPlaylists();
             if(hasBeenCanceled) return;
 
@@ -24,11 +23,10 @@ export function useController(id: string) {
                 type: 'pick',
                 playlists,
             });
-        })(controller);
-
+        }();
         return () => {
             hasBeenCanceled = true;
-            controller.current?.close();
+            controller.close();
         };
     }, [id]);
 
@@ -38,23 +36,23 @@ export function useController(id: string) {
         next,
         stage,
         async rejectNext() {
-            const next = await controller.current!.pull();
+            const next = await controllerRef.current!.pull();
             setNext(next);
         },
         async cycle() {
             setKey((key) => !key);
             setSong(next);
-            const pulled = await controller.current!.pull();
+            const pulled = await controllerRef.current!.pull();
             setNext(pulled);
         },
         async setPlaylist(playlist: string | null) {
-            controller.current!.setPlaylist(playlist);
+            controllerRef.current!.setPlaylist(playlist);
             setStage({ type: 'picked' });
             
-            const first = await controller.current!.pull();
+            const first = await controllerRef.current!.pull();
             setSong(first);
 
-            const next = await controller.current!.pull();
+            const next = await controllerRef.current!.pull();
             setNext(next);
         },
     };
