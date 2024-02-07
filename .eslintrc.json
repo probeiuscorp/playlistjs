@@ -38,7 +38,6 @@
             "error",
             "always"
         ],
-        "no-async-promise-executor": "off",
         "no-empty-pattern": "off",
         "react/prop-types": "off",
         "comma-dangle": [
