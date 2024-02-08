@@ -2,7 +2,7 @@ import { merge, stopPropagation, useAction } from ':/util';
 import { Modals } from ':/components/modal';
 import { useAtom } from 'jotai/react';
 import React, { forwardRef } from 'react';
-import { VscEdit, VscGripper, VscTrash } from 'react-icons/vsc';
+import { VscEdit, VscGripper, VscKebabVertical, VscTrash } from 'react-icons/vsc';
 import { ID, workspace } from ':/state/workspace';
 import styles from './DirectoryFile.module.css';
 import { ModalChangeName } from './ModalChangeName';
@@ -56,7 +56,7 @@ export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
             <Menu>
                 <MenuButton
                     as={ActionableMenuButton}
-                    icon={<VscEdit/>}
+                    icon={<VscKebabVertical/>}
                     onClick={stopPropagation}
                 />
                 <MenuList onClick={stopPropagation}>
