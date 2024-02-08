@@ -59,7 +59,7 @@ export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
                     icon={<VscEdit/>}
                     onClick={(e) => e.stopPropagation()}
                 />
-                <MenuList>
+                <MenuList onClick={(e) => e.stopPropagation()}>
                     <MenuItem icon={<VscEdit size="1.5em"/>} onClick={handleRename}>
                         Rename
                     </MenuItem>
