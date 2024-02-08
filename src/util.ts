@@ -4,6 +4,11 @@ import { falsy, Write } from './types';
 import React, { KeyboardEventHandler } from 'react';
 import { IsAny } from 'mongodb';
 
+type HasFunctions<T extends PropertyKey> = Record<T, () => void>;
+export const stopPropagation = (e: HasFunctions<'stopPropagation'>) => e.stopPropagation();
+export const preventDefault = (e: HasFunctions<'preventDefault'>) => e.preventDefault();
+export const consumeEvent = (e: HasFunctions<'stopPropagation' | 'preventDefault'>) => (e.stopPropagation(), e.preventDefault());
+
 export const DROP = Symbol('map()#DROP');
 export type DROP = typeof DROP;
 export function map<K extends string, V>(keys: K[], transformer: (key: K) => V | DROP): Record<K, V>;

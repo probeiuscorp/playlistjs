@@ -1,4 +1,4 @@
-import { merge, useAction } from ':/util';
+import { merge, stopPropagation, useAction } from ':/util';
 import { Modals } from ':/components/modal';
 import { useAtom } from 'jotai/react';
 import React, { forwardRef } from 'react';
@@ -57,9 +57,9 @@ export function DirectoryFile({ id, props, handle }: DirectoryFileProps) {
                 <MenuButton
                     as={ActionableMenuButton}
                     icon={<VscEdit/>}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={stopPropagation}
                 />
-                <MenuList onClick={(e) => e.stopPropagation()}>
+                <MenuList onClick={stopPropagation}>
                     <MenuItem icon={<VscEdit size="1.5em"/>} onClick={handleRename}>
                         Rename
                     </MenuItem>
