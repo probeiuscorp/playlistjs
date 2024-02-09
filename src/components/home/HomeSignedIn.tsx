@@ -1,10 +1,10 @@
 import React from 'react';
 import { useFetch } from ':/hooks/useFetch';
-import { WorkspaceData } from ':/models/Workspaces';
-import { Button, Card, Editable, EditableInput, EditablePreview, Flex, IconButton, Menu, MenuButton, MenuItem, MenuList, Text } from '@chakra-ui/react';
+import { WorkspaceData, WorkspaceVisibility } from ':/models/Workspaces';
+import { Button, Card, Editable, EditableInput, EditablePreview, Flex, IconButton, Menu, MenuButton, MenuItem, MenuList, Text, useToast } from '@chakra-ui/react';
 import { signOut } from 'next-auth/react';
 import { MdHeadphones } from 'react-icons/md';
-import { VscFolder, VscKebabVertical, VscTrash } from 'react-icons/vsc';
+import { VscFolder, VscKebabVertical, VscLock, VscTrash, VscUnlock } from 'react-icons/vsc';
 import { Page } from '../Page';
 
 export type HomeSignedInProps = {
@@ -12,6 +12,7 @@ export type HomeSignedInProps = {
     initialWorkspaces: WorkspaceData[] | null
 }
 export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
+    const showToast = useToast();
     const { data: loadedWorkspaces, mutate } = useFetch<WorkspaceData[]>('/api/workspaces');
     const workspaces = loadedWorkspaces ?? initialWorkspaces;
 
@@ -25,24 +26,6 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
             workspace,
         ]);
     }
-
-    async function renameWorkspace(id: string, newName: string) {
-        await fetch(`/api/workspaces/${id}/name`, {
-            method: 'POST',
-            body: JSON.stringify(newName),
-        });
-
-        mutate((last) => last?.map((workspace) => {
-            if(workspace.id === id) {
-                return {
-                    ...workspace,
-                    name: newName,
-                };
-            } else {
-                return workspace;
-            }
-        }));
-    }
     
     async function deleteWorkspace(id: string) {
         await fetch(`/api/workspaces/${id}`, {
@@ -50,6 +33,26 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
         });
 
         mutate((last) => last?.filter((workspace) => workspace.id !== id) ?? []);
+    }
+
+    const modifyWorkspace = (id: string, modify: (workspace: WorkspaceData) => WorkspaceData) => mutate((last) => last?.map((workspace) => {
+        return workspace.id === id ? modify(workspace) : workspace;
+    }));
+    async function renameWorkspace(id: string, name: string) {
+        await fetch(`/api/workspaces/${id}/name`, {
+            method: 'POST',
+            body: JSON.stringify(name),
+        });
+
+        modifyWorkspace(id, (workspace) => ({ ...workspace, name }));
+    }
+
+    async function setWorkspaceVisibility(id: string, visibility: WorkspaceVisibility) {
+        modifyWorkspace(id, (workspace) => ({ ...workspace, visibility }));
+        await fetch(`/api/workspaces/${id}/visibility`, {
+            method: 'POST',
+            body: JSON.stringify(visibility),
+        });
     }
 
     return (
@@ -106,6 +109,33 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
                                         <MenuItem icon={<VscTrash size="1.5em"/>} onClick={() => deleteWorkspace(workspace.id)}>
                                             Delete
                                         </MenuItem>
+                                        {workspace.visibility === 'public' ? (
+                                            <MenuItem icon={<VscLock size="1.5em"/>} onClick={() => {
+                                                setWorkspaceVisibility(workspace.id, 'private');
+                                                showToast({
+                                                    title: `${workspace.name} is now private`,
+                                                    description: 'Only you, logged in, can listen',
+                                                    status: 'info',
+                                                    duration: 10e3,
+                                                    isClosable: true,
+                                                });
+                                            }}>
+                                                Make private
+                                            </MenuItem>
+                                        ) : (
+                                            <MenuItem icon={<VscUnlock size="1.5em"/>} onClick={() => {
+                                                setWorkspaceVisibility(workspace.id, 'public');
+                                                showToast({
+                                                    title: `${workspace.name} is now public`,
+                                                    description: 'Anyone with a link can listen and see the compiled source',
+                                                    status: 'info',
+                                                    duration: 10e3,
+                                                    isClosable: true,
+                                                });
+                                            }}>
+                                                Make public
+                                            </MenuItem>
+                                        )}
                                     </MenuList>
                                 </Menu>
                             </Card>

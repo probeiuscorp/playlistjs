@@ -21,14 +21,19 @@ const theme = extendTheme({
 const justMakeItDarkThemeMan: typeof localStorageManager = {
     type: 'localStorage',
     get: () => 'dark',
-    set: () => { /* */ },
+    set: () => undefined,
     ssr: false,
 };
 
 export default function App({ Component, pageProps: { session, ...pageProps }}: AppProps) {
     return (
         <SessionProvider session={session}>
-            <ChakraProvider theme={theme} resetCSS colorModeManager={justMakeItDarkThemeMan}>
+            <ChakraProvider
+                theme={theme}
+                colorModeManager={justMakeItDarkThemeMan}
+                toastOptions={{ defaultOptions: { position: 'bottom-right' }}}
+                resetCSS
+            >
                 <Component {...pageProps}/>
             </ChakraProvider>
         </SessionProvider>

@@ -23,8 +23,8 @@ export default handler(async (req, res, getUser) => {
     if(typeof id !== 'string')
         return void res.status(400).send('Must include :id');
 
-    const user = await getUser();
-    const workspace = await findWorkspaceById(id, user);
+    const user = await getUser('optional');
+    const workspace = await findWorkspaceById(id, user, 'readonly');
     if(workspace === null)
         return void res.status(404).send(`No workspace could be found by id="${id}"`);
 

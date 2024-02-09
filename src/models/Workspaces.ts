@@ -16,9 +16,14 @@ export type WorkspaceDirectory = {
     openFiles: string[]
     open?: string
 };
+const workspaceVisibility = ['public', 'private'] as const;
+export type WorkspaceVisibility = (typeof workspaceVisibility)[number];
+export const isWorkspaceVisibility = (value: unknown): value is WorkspaceVisibility => workspaceVisibility.includes(value as WorkspaceVisibility);
+
 export type WorkspaceData = {
     id: string
     name: string
+    visibility?: WorkspaceVisibility
     directory: WorkspaceDirectory
 }
 export type Workspace = {
@@ -31,12 +36,30 @@ export const isWorkspace = ajv.compile<Workspace>(schema);
 export const isWorkspaceDirectory = ajv.compile<WorkspaceDirectory>(schema.properties.directory);
 export const workspaces = collection<Workspace>('workspaces');
 
-export async function findWorkspaceById(id: string, user: string | null | undefined) {
-    if(user == null) return null;
-    return workspaces.findOne({
-        'data.id': id,
-        user,
-    });
+export async function findWorkspaceById(id: string, user: string | null | undefined, access: 'readonly' | 'write' = 'write') {
+    if(access === 'write') {
+        if(user == null) return null;
+        return workspaces.findOne({
+            'data.id': id,
+            user,
+        });
+    } else {
+        if(user == null) {
+            return workspaces.findOne({
+                'data.id': id,
+                'data.visibility': 'public',
+            });
+        } else {
+            return workspaces.findOne({
+                'data.id': id,
+                $or: [{
+                    user,
+                }, {
+                    'data.visibility': 'public',
+                }],
+            });
+        }
+    }
 }
 
 export async function findWorkspacesByUser(user: string) {
