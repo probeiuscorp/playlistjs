@@ -6,7 +6,10 @@
     "start": "next start",
     "test": "mocha -r tsx 'src/**/*.test.ts'",
     "build:all": "npm run build:theme",
-    "build:theme": "tsx scripts/buildTheme/buildTheme.ts"
+    "build:theme": "tsx scripts/buildTheme/buildTheme.ts",
+    "lint": "status=0; npm run lint:eslint || status=1; npm run lint:types || status=1; exit $status",
+    "lint:eslint": "npx eslint .",
+    "lint:types": "npx tsc --noEmit"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.7.1",
