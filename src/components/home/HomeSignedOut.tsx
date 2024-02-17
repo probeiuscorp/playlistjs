@@ -62,7 +62,7 @@ export function HomeSignedOut({ provider }: HomeSignedOutProps) {
 
             <Flex
                 direction="column"
-                mt="1em"
+                mt="3em"
                 overflowX="auto"
             >
                 <Box
@@ -70,6 +70,9 @@ export function HomeSignedOut({ provider }: HomeSignedOutProps) {
                     minWidth="42em"
                     maxWidth="max-content"
                 >
+                    <Text fontSize="lg">
+                        Create dynamic playlists with TypeScript:
+                    </Text>
                     <Code code={code}/>
                 </Box>
             </Flex>
