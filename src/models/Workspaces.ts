@@ -68,6 +68,20 @@ export async function findWorkspacesByUser(user: string) {
     }).toArray();
 }
 
+const initialWorkspaceContent = `\
+// Get ID of the YouTube video, such as: youtube.com/watch?v=dQw4w9WgXcQ
+const song = 'dQw4w9WgXcQ';
+
+// Any iterable will do
+Playlist.yield([song]);
+
+// Provide a name to yield multiple playlists
+Playlist.yield('forever', function*() {
+    while(true) {
+        yield song;
+    }
+});
+`;
 export function createWorkspaceDirectory(): WorkspaceDirectory {
     const main = nanoid();
 
@@ -76,7 +90,7 @@ export function createWorkspaceDirectory(): WorkspaceDirectory {
             id: main,
             kind: 'file',
             path: './main',
-            content: 'Playlist.yield([]);',
+            content: initialWorkspaceContent,
             isEntry: true,
         }],
         open: main,
