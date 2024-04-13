@@ -4,9 +4,10 @@ import testable from ':/lib/execute/testable';
 // @ts-ignore
 import worker from ':/lib/execute/worker.js.txt';
 import { findWorkspaceById, workspaces } from ':/models/Workspaces';
-import { bundle } from ':/lib/bundle';
+import { bundle, getDirectoryEntryPoints, getFilesFromInMemory } from ':/lib/bundle';
 import esbuild, { BuildFailure } from 'esbuild';
 import { WorkspaceBuildFailure } from ':/components/listen/controller';
+import { NextApiResponse } from 'next';
 
 const workerSource: string = testable.replace(/export /g, '') + worker.slice(worker.indexOf('\n'));
 const minifiedWorker = esbuild.transformSync(workerSource, {
@@ -14,11 +15,14 @@ const minifiedWorker = esbuild.transformSync(workerSource, {
     minify: true,
 }).code;
 const [workerBefore, workerAfter] = minifiedWorker.split('/**@license*/');
+export const getWorkerCode = (code: string) => workerBefore + code + workerAfter;
 
-export default handler(async (req, res, getUser) => {
+export function applyWorkerHeaders(res: NextApiResponse) {
     res.setHeader('Content-Security-Policy', 'sandbox');
     res.setHeader('Content-Type', 'text/javascript');
+}
 
+export default handler(async (req, res, getUser) => {
     const id = req.query.id;
     if(typeof id !== 'string')
         return void res.status(400).send('Must include :id');
@@ -29,8 +33,9 @@ export default handler(async (req, res, getUser) => {
         return void res.status(404).send(`No workspace could be found by id="${id}"`);
 
     try {
-        const code = workspace.code ?? await bundle(workspace.data.directory);
-        res.send(workerBefore + code + workerAfter);
+        const files = workspace.data.directory.files;
+        const code = workspace.code ?? await bundle(getDirectoryEntryPoints(files), getFilesFromInMemory(files));
+        res.send(getWorkerCode(code));
         
         if(workspace.code === undefined) {
             await workspaces.findOneAndUpdate({

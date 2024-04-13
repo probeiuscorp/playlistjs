@@ -1,23 +1,36 @@
-import { WorkspaceDirectory } from ':/models/Workspaces';
+import { WorkspaceFile } from ':/models/Workspaces';
 import esbuild from 'esbuild';
 
-export async function bundle(directory: WorkspaceDirectory) {
-    const entries: { in: string; out: string }[] = [];
-    const map = new Map<string, string>();
-    for(const file of directory.files) {
-        map.set(file.path, file.content);
-        if(file.isEntry) {
-            entries.push({
-                in: file.path,
-                out: '',
-            });
+export function getDirectoryEntryPoints(files: WorkspaceFile[]) {
+    return files.flatMap(({ path, isEntry }) => {
+        if(isEntry) {
+            return path;
+        } else {
+            return [];
         }
-    }
+    });
+}
 
+export function getFilesFromInMemory(files: WorkspaceFile[]) {
+    const lookup = new Map<string, string>();
+    for(const file of files) {
+        lookup.set(file.path, file.content);
+    }
+    return (path: string) => {
+        const file = lookup.get(path);
+        if(file === undefined) {
+            return Promise.reject(`${path} does not exist`);
+        } else {
+            return file;
+        }
+    };
+}
+
+export async function bundle(entryPoints: string[], getFile: (path: string) => string | Promise<string>) {
     const name = 'Playlist.js';
     const build = await esbuild.build({
         write: false,
-        entryPoints: entries,
+        entryPoints,
         bundle: true,
         minify: true,
         plugins: [
@@ -35,10 +48,10 @@ export async function bundle(directory: WorkspaceDirectory) {
                     build.onLoad({
                         filter: /$/,
                         namespace: name,
-                    }, (args) => ({
-                        contents: map.get(args.path),
+                    }, (args) => Promise.resolve(getFile(args.path)).then((contents) => ({
+                        contents,
                         loader: 'ts',
-                    }));
+                    })));
                 },
             },
         ],
