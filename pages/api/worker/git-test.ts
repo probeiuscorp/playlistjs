@@ -1,6 +1,6 @@
 import { bundle } from ':/lib/bundle';
 import { handler } from ':/lib/handler';
-import { mkdir, readFile, rm } from 'fs/promises';
+import { mkdir, readFile, readdir, rm } from 'fs/promises';
 import os from 'os';
 import { join } from 'path';
 import { applyWorkerHeaders, getWorkerCode } from './[id]';
@@ -40,6 +40,8 @@ export default handler(async (req, res, getUser) => {
         await new Promise((resolve) => {
             setTimeout(resolve, 2e3);
         });
+        const files = await readdir(path);
+        files.forEach(console.log);
         console.log('bundling');
         const code = await bundle([join(path, 'src/main.ts')], readFileString);
         res.send(getWorkerCode(code));
