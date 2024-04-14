@@ -32,9 +32,15 @@ export default handler(async (req, res, getUser) => {
         //     },
         // });
         // await repository.checkoutBranch(branchName);
+        console.log('cloning', url, path);
         await new Promise((resolve) => {
             exec(`git clone -n --depth=1 --filter=tree:0 "${url}" "${path}" && cd "${path}" && git sparse-checkout set --no-cone src && git checkout`, resolve);
         });
+        console.log('artificial wait');
+        await new Promise((resolve) => {
+            setTimeout(resolve, 2e3);
+        });
+        console.log('bundling');
         const code = await bundle([join(path, 'src/main.ts')], readFileString);
         res.send(getWorkerCode(code));
     } finally {
