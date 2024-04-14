@@ -2,6 +2,7 @@ import { bundle } from ':/lib/bundle';
 import { handler } from ':/lib/handler';
 import { mkdir, readFile, readdir, rm } from 'fs/promises';
 import os from 'os';
+import Git from 'nodegit';
 import { join } from 'path';
 import { applyWorkerHeaders, getWorkerCode } from './[id]';
 import { exec as execCallback } from 'child_process';
@@ -26,20 +27,20 @@ export default handler(async (req, res, getUser) => {
     // const branchName = 'main';
     const path = join(os.tmpdir(), urlToDirectoryName(url));
     try {
-        // const repository = await Git.Clone(url, path, {
-        //     fetchOpts: {
-        //         callbacks: {
-        //             certificateCheck: () => -1,
-        //         },
-        //     },
-        // });
-        // await repository.checkoutBranch(branchName);
-        console.log('cloning', url, path);
-        await exec(`git clone -n --depth=1 --filter=tree:0 "${url}" "${path}" && cd "${path}" && git sparse-checkout set --no-cone src && git checkout`);
-        console.log('artificial wait');
-        await new Promise((resolve) => {
-            setTimeout(resolve, 2e3);
+        const repository = await Git.Clone(url, path, {
+            fetchOpts: {
+                callbacks: {
+                    certificateCheck: () => -1,
+                },
+            },
         });
+        // await repository.checkoutBranch(branchName);
+        // console.log('cloning', url, path);
+        // await exec(`git clone -n --depth=1 --filter=tree:0 "${url}" "${path}" && cd "${path}" && git sparse-checkout set --no-cone src && git checkout`);
+        // console.log('artificial wait');
+        // await new Promise((resolve) => {
+        //     setTimeout(resolve, 2e3);
+        // });
         const files = await readdir(path);
         files.forEach(console.log);
         console.log('bundling');
