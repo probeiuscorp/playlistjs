@@ -4,7 +4,8 @@ import { mkdir, readFile, readdir, rm } from 'fs/promises';
 import os from 'os';
 import { join } from 'path';
 import { applyWorkerHeaders, getWorkerCode } from './[id]';
-import { exec } from 'child_process';
+import { exec as execCallback } from 'child_process';
+import { promisify } from 'util';
 
 async function readFileString(path: string) {
     const buffer = await readFile(path);
@@ -18,6 +19,7 @@ export function urlToDirectoryName(url: string) {
         .replaceAll('/', '_');
 }
 
+const exec = promisify(execCallback);
 export default handler(async (req, res, getUser) => {
     applyWorkerHeaders(res);
     const url = 'https://github.com/probeiuscorp/playlistjs-sample.git';
@@ -33,9 +35,7 @@ export default handler(async (req, res, getUser) => {
         // });
         // await repository.checkoutBranch(branchName);
         console.log('cloning', url, path);
-        await new Promise((resolve) => {
-            exec(`git clone -n --depth=1 --filter=tree:0 "${url}" "${path}" && cd "${path}" && git sparse-checkout set --no-cone src && git checkout`, resolve);
-        });
+        await exec(`git clone -n --depth=1 --filter=tree:0 "${url}" "${path}" && cd "${path}" && git sparse-checkout set --no-cone src && git checkout`);
         console.log('artificial wait');
         await new Promise((resolve) => {
             setTimeout(resolve, 2e3);
