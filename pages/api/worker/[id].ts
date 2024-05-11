@@ -3,11 +3,12 @@ import { handler } from ':/lib/handler';
 import testable from ':/lib/execute/testable';
 // @ts-ignore
 import worker from ':/lib/execute/worker.js.txt';
-import { findWorkspaceById, workspaces } from ':/models/Workspaces';
+import { Workspace, findWorkspaceById, workspaces } from ':/models/Workspaces';
 import { bundle, getDirectoryEntryPoints, getFilesFromInMemory } from ':/lib/bundle';
 import esbuild, { BuildFailure } from 'esbuild';
 import { WorkspaceBuildFailure } from ':/components/listen/controller';
 import { NextApiResponse } from 'next';
+import { shallowCloneRef, httpFetchUsing } from 'git-clone-client';
 
 const workerSource: string = testable.replace(/export /g, '') + worker.slice(worker.indexOf('\n'));
 const minifiedWorker = esbuild.transformSync(workerSource, {
@@ -22,6 +23,31 @@ export function applyWorkerHeaders(res: NextApiResponse) {
     res.setHeader('Content-Type', 'text/javascript');
 }
 
+const cloneRepository = httpFetchUsing(fetch);
+async function buildWorkspaceCode(workspace: Workspace) {
+    const isGitRepository = true;
+    if(isGitRepository) {
+        const ref = 'refs/heads/main';
+        const repository = 'https://github.com/probeiuscorp/playlistjs-sample.git';
+        const filesList = await shallowCloneRef(ref, {
+            makeRequest: cloneRepository(repository),
+            filter: (filepath) => filepath.startsWith('src/'),
+        });
+        const filesMap = new Map(filesList.map(({ filepath, content }) => [filepath, content]));
+        return await bundle(['src/main.ts'], (filepath) => {
+            const file = filesMap.get(filepath);
+            if(file === undefined) {
+                throw new Error(`No such file '${filepath}'`);
+            } else {
+                return file.toString();
+            }
+        });
+    } else {
+        const files = workspace.data.directory.files;
+        return await bundle(getDirectoryEntryPoints(files), getFilesFromInMemory(files));
+    }
+}
+
 export default handler(async (req, res, getUser) => {
     const id = req.query.id;
     if(typeof id !== 'string')
@@ -33,10 +59,9 @@ export default handler(async (req, res, getUser) => {
         return void res.status(404).send(`No workspace could be found by id="${id}"`);
 
     try {
-        const files = workspace.data.directory.files;
-        const code = workspace.code ?? await bundle(getDirectoryEntryPoints(files), getFilesFromInMemory(files));
+        const code = workspace.code ?? await buildWorkspaceCode(workspace);
         res.send(getWorkerCode(code));
-        
+
         if(workspace.code === undefined) {
             await workspaces.findOneAndUpdate({
                 'data.id': id,
