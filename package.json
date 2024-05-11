@@ -25,6 +25,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "esbuild": "^0.18.17",
     "framer-motion": "^10.12.21",
+    "git-clone-client": "^0.0.5",
     "immer": "^9.0.17",
     "jotai": "^2.4.0",
     "monaco-editor": "^0.34.1",
