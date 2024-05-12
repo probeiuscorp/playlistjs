@@ -25,10 +25,10 @@ export function applyWorkerHeaders(res: NextApiResponse) {
 
 const cloneRepository = httpFetchUsing(fetch);
 async function buildWorkspaceCode(workspace: Workspace) {
-    const isGitRepository = true;
-    if(isGitRepository) {
+    const { data } = workspace;
+    if(data.type === 'git') {
         const ref = 'refs/heads/main';
-        const repository = 'https://github.com/probeiuscorp/playlistjs-sample.git';
+        const repository = data.repositoryUrl;
         const filesList = await shallowCloneRef(ref, {
             makeRequest: cloneRepository(repository),
             filter: (filepath) => filepath.startsWith('src/'),
@@ -43,7 +43,7 @@ async function buildWorkspaceCode(workspace: Workspace) {
             }
         });
     } else {
-        const files = workspace.data.directory.files;
+        const files = data.directory.files;
         return await bundle(getDirectoryEntryPoints(files), getFilesFromInMemory(files));
     }
 }

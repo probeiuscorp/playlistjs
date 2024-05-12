@@ -20,19 +20,24 @@ const workspaceVisibility = ['public', 'private'] as const;
 export type WorkspaceVisibility = (typeof workspaceVisibility)[number];
 export const isWorkspaceVisibility = (value: unknown): value is WorkspaceVisibility => workspaceVisibility.includes(value as WorkspaceVisibility);
 
-export type WorkspaceData = {
+export type WorkspaceData = ({
     id: string
     name: string
     visibility?: WorkspaceVisibility
+}) & ({
+    type: 'git'
+    repositoryUrl: string
+} | {
+    type: 'hosted'
     directory: WorkspaceDirectory
-}
+});
+export type WorkspaceDataHosted = WorkspaceData & { type: 'hosted' };
 export type Workspace = {
     user: string
     data: WorkspaceData
     code?: string
 };
 
-export const isWorkspace = ajv.compile<Workspace>(schema);
 export const isWorkspaceDirectory = ajv.compile<WorkspaceDirectory>(schema.properties.directory);
 export const workspaces = collection<Workspace>('workspaces');
 
