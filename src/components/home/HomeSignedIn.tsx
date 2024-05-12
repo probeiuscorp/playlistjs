@@ -123,9 +123,6 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
                                         icon={<VscKebabVertical/>}
                                     />
                                     <MenuList>
-                                        <MenuItem icon={<VscTrash size="1.5em"/>} onClick={() => deleteWorkspace(workspace.id)}>
-                                            Delete
-                                        </MenuItem>
                                         {workspace.visibility === 'public' ? (
                                             <MenuItem icon={<VscLock size="1.5em"/>} onClick={() => {
                                                 setWorkspaceVisibility(workspace.id, 'private');
@@ -164,6 +161,9 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
                                             ) : (
                                                 <>Change Git repository</>
                                             )}
+                                        </MenuItem>
+                                        <MenuItem icon={<VscTrash size="1.5em"/>} onClick={() => deleteWorkspace(workspace.id)}>
+                                            Delete
                                         </MenuItem>
                                     </MenuList>
                                 </Menu>
