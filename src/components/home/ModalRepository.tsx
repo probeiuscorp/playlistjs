@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modals } from '../modal';
 import { Modal } from '../Modal';
-import { Button, FormControl, FormErrorMessage, FormLabel, Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Button, FormControl, FormErrorMessage, FormLabel, Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
 import { VscGitMerge } from 'react-icons/vsc';
 import { attempt } from ':/util';
 
@@ -31,6 +31,15 @@ export const ModalRepository = Modals.createModal<{ currentURL?: string }, strin
     return (
         <Modal onClose={close}>
             <Modal.Content>
+                {!currentURL && (
+                    <Alert status="warning" mb={6}>
+                        <AlertIcon/>
+                        <AlertDescription>
+                            Please download your repository before converting to Git.<br/>
+                            <b>Otherwise all your files will be lost!</b>
+                        </AlertDescription>
+                    </Alert>
+                )}
                 <FormControl isInvalid={!!error}>
                     <FormLabel display="flex" alignItems="center" gap={1} pl={2}>
                         <VscGitMerge size="1.5rem"/>
