@@ -35,7 +35,6 @@ export type WorkspaceDataHosted = WorkspaceData & { type: 'hosted' };
 export type Workspace = {
     user: string
     data: WorkspaceData
-    code?: string
 };
 
 export const isWorkspaceDirectory = ajv.compile<WorkspaceDirectory>(schema.properties.directory);

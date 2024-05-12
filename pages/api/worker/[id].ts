@@ -3,7 +3,7 @@ import { handler } from ':/lib/handler';
 import testable from ':/lib/execute/testable';
 // @ts-ignore
 import worker from ':/lib/execute/worker.js.txt';
-import { Workspace, findWorkspaceById, workspaces } from ':/models/Workspaces';
+import { Workspace, findWorkspaceById } from ':/models/Workspaces';
 import { bundle, getDirectoryEntryPoints, getFilesFromInMemory } from ':/lib/bundle';
 import esbuild, { BuildFailure } from 'esbuild';
 import { WorkspaceBuildFailure } from ':/components/listen/controller';
@@ -59,18 +59,8 @@ export default handler(async (req, res, getUser) => {
         return void res.status(404).send(`No workspace could be found by id="${id}"`);
 
     try {
-        const code = workspace.code ?? await buildWorkspaceCode(workspace);
+        const code = await buildWorkspaceCode(workspace);
         res.send(getWorkerCode(code));
-
-        if(workspace.code === undefined) {
-            await workspaces.findOneAndUpdate({
-                'data.id': id,
-            }, {
-                $set: {
-                    code,
-                },
-            });
-        }
     } catch(caught) {
         try {
             const failure = caught as BuildFailure;
