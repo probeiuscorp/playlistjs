@@ -6,11 +6,11 @@ import { FilesOpen } from './FilesOpen';
 import { FileEditor } from './FileEditor';
 import { Directory } from './Directory';
 import styles from './PageWorkspace.module.css';
-import { WorkspaceData } from ':/models/Workspaces';
+import { WorkspaceDataHosted } from ':/models/Workspaces';
 import { atom } from 'jotai';
 
 export const workspaceIdAtom = atom(null as any as string);
-export function PageWorkspace({ id, directory }: WorkspaceData) {
+export function PageWorkspace({ id, directory }: WorkspaceDataHosted) {
     const store = useInitializedStore(store => {
         store.set(workspaceIdAtom, id);
         store.set(workspace.deserialize, directory);

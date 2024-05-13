@@ -13,6 +13,7 @@ export default handler(async (req, res, getUser) => {
         const newWorkspace: Workspace = {
             user,
             data: {
+                type: 'hosted',
                 id,
                 name,
                 directory: createWorkspaceDirectory(),

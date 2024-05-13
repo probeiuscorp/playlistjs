@@ -4,8 +4,10 @@ import { WorkspaceData, WorkspaceVisibility } from ':/models/Workspaces';
 import { Button, Card, Editable, EditableInput, EditablePreview, Flex, IconButton, Menu, MenuButton, MenuItem, MenuList, Text, useToast } from '@chakra-ui/react';
 import { signOut } from 'next-auth/react';
 import { MdHeadphones } from 'react-icons/md';
-import { VscFolder, VscKebabVertical, VscLock, VscTrash, VscUnlock } from 'react-icons/vsc';
+import { VscArrowDown, VscFolder, VscGitMerge, VscKebabVertical, VscLock, VscTrash, VscUnlock } from 'react-icons/vsc';
 import { Page } from '../Page';
+import { Modals } from '../modal';
+import { ModalRepository } from './ModalRepository';
 
 export type HomeSignedInProps = {
     user: string
@@ -55,6 +57,20 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
         });
     }
 
+    async function pickWorkspaceRepositoryUrl(id: string) {
+        const workspace = workspaces?.find((testWorkspace) => testWorkspace.id === id);
+        const repositoryUrl = await Modals.open(ModalRepository, {
+            workspaceId: id,
+            currentURL: workspace?.type === 'git' ? workspace.repositoryUrl : undefined,
+        });
+        if(!repositoryUrl) return;
+        modifyWorkspace(id, (workspace) => ({ ...workspace, type: 'git', repositoryUrl }));
+        await fetch(`/api/workspaces/${id}/set-repository-url`, {
+            method: 'POST',
+            body: JSON.stringify(repositoryUrl),
+        });
+    }
+
     return (
         <Page>
             <Flex m={4} gap={1} direction="column" alignItems="center">
@@ -99,16 +115,15 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
                                     <EditableInput pl={2} pr={2}/>
                                 </Editable>
                                 <IconButton aria-label="Listen" icon={<MdHeadphones/>} as="a" href={`/listen/${workspace.id}`}/>
-                                <IconButton aria-label="Open" icon={<VscFolder/>} as="a" href={`/workspace/${workspace.id}`}/>
+                                {workspace.type === 'hosted' && (
+                                    <IconButton aria-label="Open" icon={<VscFolder/>} as="a" href={`/workspace/${workspace.id}`}/>
+                                )}
                                 <Menu>
                                     <MenuButton
                                         as={IconButton}
                                         icon={<VscKebabVertical/>}
                                     />
                                     <MenuList>
-                                        <MenuItem icon={<VscTrash size="1.5em"/>} onClick={() => deleteWorkspace(workspace.id)}>
-                                            Delete
-                                        </MenuItem>
                                         {workspace.visibility === 'public' ? (
                                             <MenuItem icon={<VscLock size="1.5em"/>} onClick={() => {
                                                 setWorkspaceVisibility(workspace.id, 'private');
@@ -136,6 +151,21 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
                                                 Make public
                                             </MenuItem>
                                         )}
+                                        {workspace.type === 'hosted' && (
+                                            <MenuItem as="a" href={`/api/workspaces/${workspace.id}/download-as-tar`} download icon={<VscArrowDown size="1.5em"/>}>
+                                                Download TAR
+                                            </MenuItem>
+                                        )}
+                                        <MenuItem icon={<VscGitMerge size="1.5em"/>} onClick={() => pickWorkspaceRepositoryUrl(workspace.id)}>
+                                            {workspace.type === 'hosted' ? (
+                                                <>Convert to Git repository</>
+                                            ) : (
+                                                <>Change Git repository</>
+                                            )}
+                                        </MenuItem>
+                                        <MenuItem icon={<VscTrash size="1.5em"/>} onClick={() => deleteWorkspace(workspace.id)}>
+                                            Delete
+                                        </MenuItem>
                                     </MenuList>
                                 </Menu>
                             </Card>

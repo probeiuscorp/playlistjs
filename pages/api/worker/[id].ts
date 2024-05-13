@@ -3,10 +3,12 @@ import { handler } from ':/lib/handler';
 import testable from ':/lib/execute/testable';
 // @ts-ignore
 import worker from ':/lib/execute/worker.js.txt';
-import { findWorkspaceById, workspaces } from ':/models/Workspaces';
-import { bundle } from ':/lib/bundle';
+import { Workspace, findWorkspaceById } from ':/models/Workspaces';
+import { bundle, getDirectoryEntryPoints, getFilesFromInMemory } from ':/lib/bundle';
 import esbuild, { BuildFailure } from 'esbuild';
 import { WorkspaceBuildFailure } from ':/components/listen/controller';
+import { NextApiResponse } from 'next';
+import { shallowCloneRef, httpFetchUsing } from 'git-clone-client';
 
 const workerSource: string = testable.replace(/export /g, '') + worker.slice(worker.indexOf('\n'));
 const minifiedWorker = esbuild.transformSync(workerSource, {
@@ -14,11 +16,39 @@ const minifiedWorker = esbuild.transformSync(workerSource, {
     minify: true,
 }).code;
 const [workerBefore, workerAfter] = minifiedWorker.split('/**@license*/');
+export const getWorkerCode = (code: string) => workerBefore + code + workerAfter;
 
-export default handler(async (req, res, getUser) => {
+export function applyWorkerHeaders(res: NextApiResponse) {
     res.setHeader('Content-Security-Policy', 'sandbox');
     res.setHeader('Content-Type', 'text/javascript');
+}
 
+const cloneRepository = httpFetchUsing(fetch);
+async function buildWorkspaceCode(workspace: Workspace) {
+    const { data } = workspace;
+    if(data.type === 'git') {
+        const ref = 'refs/heads/main';
+        const repository = data.repositoryUrl;
+        const filesList = await shallowCloneRef(ref, {
+            makeRequest: cloneRepository(repository),
+            filter: (filepath) => filepath.startsWith('src/'),
+        });
+        const filesMap = new Map(filesList.map(({ filepath, content }) => [filepath, content]));
+        return await bundle(['src/main.ts'], (filepath) => {
+            const file = filesMap.get(filepath);
+            if(file === undefined) {
+                throw new Error(`No such file '${filepath}'`);
+            } else {
+                return file.toString();
+            }
+        });
+    } else {
+        const files = data.directory.files;
+        return await bundle(getDirectoryEntryPoints(files), getFilesFromInMemory(files));
+    }
+}
+
+export default handler(async (req, res, getUser) => {
     const id = req.query.id;
     if(typeof id !== 'string')
         return void res.status(400).send('Must include :id');
@@ -29,18 +59,8 @@ export default handler(async (req, res, getUser) => {
         return void res.status(404).send(`No workspace could be found by id="${id}"`);
 
     try {
-        const code = workspace.code ?? await bundle(workspace.data.directory);
-        res.send(workerBefore + code + workerAfter);
-        
-        if(workspace.code === undefined) {
-            await workspaces.findOneAndUpdate({
-                'data.id': id,
-            }, {
-                $set: {
-                    code,
-                },
-            });
-        }
+        const code = await buildWorkspaceCode(workspace);
+        res.send(getWorkerCode(code));
     } catch(caught) {
         try {
             const failure = caught as BuildFailure;
