@@ -151,7 +151,7 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
                                             </MenuItem>
                                         )}
                                         {workspace.type === 'hosted' && (
-                                            <MenuItem icon={<VscArrowDown size="1.5em"/>}>
+                                            <MenuItem as="a" href={`/api/workspaces/${workspace.id}/download-as-tar`} download icon={<VscArrowDown size="1.5em"/>}>
                                                 Download TAR
                                             </MenuItem>
                                         )}
