@@ -1,5 +1,5 @@
 import { handler } from ':/lib/handler';
-import { FileKind, WorkspaceData, findWorkspaceById } from ':/models/Workspaces';
+import { FileKind, WorkspaceDataHosted, findWorkspaceById } from ':/models/Workspaces';
 import { mkdir, readFile, rm, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { create } from 'tar';
@@ -12,7 +12,7 @@ export function getExtension(kind: FileKind) {
     }
 }
 
-export async function makeTarFile({ id, directory }: Pick<WorkspaceData, 'id' | 'directory'>) {
+export async function makeTarFile({ id, directory }: Pick<WorkspaceDataHosted, 'id' | 'directory'>) {
     const rootdir = `/tmp/${id}`;
     const srcdir = `${rootdir}/src`;
     try {
@@ -42,7 +42,7 @@ export async function makeTarFile({ id, directory }: Pick<WorkspaceData, 'id' | 
 export default handler(async (req, res, getUser) => {
     const user = await getUser();
     const workspace = await findWorkspaceById(String(req.query.id!), user, 'readonly');
-    if(workspace === null)
+    if(workspace === null || workspace.data.type !== 'hosted')
         return void res.status(404).send('Playlist Not Found');
 
     const buffer = await makeTarFile(workspace.data);
