@@ -60,6 +60,7 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
     async function pickWorkspaceRepositoryUrl(id: string) {
         const workspace = workspaces?.find((testWorkspace) => testWorkspace.id === id);
         const repositoryUrl = await Modals.open(ModalRepository, {
+            workspaceId: id,
             currentURL: workspace?.type === 'git' ? workspace.repositoryUrl : undefined,
         });
         if(!repositoryUrl) return;

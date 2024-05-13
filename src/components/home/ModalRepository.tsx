@@ -11,7 +11,7 @@ function withoutScheme(url: string) {
     return url.slice(index + 3);
 }
 
-export const ModalRepository = Modals.createModal<{ currentURL?: string }, string | null>(({ modal, currentURL }) => {
+export const ModalRepository = Modals.createModal<{ currentURL?: string; workspaceId: string }, string | null>(({ modal, currentURL, workspaceId }) => {
     const [value, setValue] = useState(currentURL ? withoutScheme(currentURL) : '');
     const [error, setError] = useState('');
     const close = () => modal.resolve(null);
@@ -35,7 +35,9 @@ export const ModalRepository = Modals.createModal<{ currentURL?: string }, strin
                     <Alert status="warning" mb={6}>
                         <AlertIcon/>
                         <AlertDescription>
-                            Please download your repository before converting to Git.<br/>
+                            Please{' '}
+                            <a style={{ all: 'revert' }} href={`/api/workspaces/${workspaceId}/download-as-tar`} download>download your repository</a>
+                            {' '}before converting to Git.<br/>
                             <b>Otherwise all your files will be lost!</b>
                         </AlertDescription>
                     </Alert>
