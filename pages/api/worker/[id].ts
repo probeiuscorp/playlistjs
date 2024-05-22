@@ -75,7 +75,10 @@ export default handler(async (req, res, getUser) => {
                     message: text,
                 })) satisfies WorkspaceBuildFailure,
             }))})`);
-        } catch {
+        } catch(e) {
+            console.error('Failed to make worker');
+            console.error('Failed to build source', caught);
+            console.error('Failed to build error script', e);
             res.status(500).send('Internal Server Error');
         }
     }
