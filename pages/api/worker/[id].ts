@@ -23,6 +23,7 @@ export function applyWorkerHeaders(res: NextApiResponse) {
     res.setHeader('Content-Type', 'text/javascript');
 }
 
+const extensions = ['', '.ts'];
 const cloneRepository = httpFetchUsing(fetch);
 async function buildWorkspaceCode(workspace: Workspace) {
     const { data } = workspace;
@@ -35,12 +36,13 @@ async function buildWorkspaceCode(workspace: Workspace) {
         });
         const filesMap = new Map(filesList.map(({ filepath, content }) => [filepath, content]));
         return await bundle(['src/main.ts'], (filepath) => {
-            const file = filesMap.get(filepath);
-            if(file === undefined) {
-                throw new Error(`No such file '${filepath}'`);
-            } else {
-                return file.toString();
+            for(const extension of extensions) {
+                const file = filesMap.get(filepath + extension);
+                if(file !== undefined) {
+                    return file.toString();
+                }
             }
+            throw new Error(`No such file '${filepath}'`);
         });
     } else {
         const files = data.directory.files;
