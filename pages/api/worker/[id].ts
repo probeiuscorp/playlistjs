@@ -9,6 +9,7 @@ import esbuild, { BuildFailure } from 'esbuild';
 import { WorkspaceBuildFailure } from ':/components/listen/controller';
 import { NextApiResponse } from 'next';
 import { shallowCloneRef, httpFetchUsing } from 'git-clone-client';
+import { join } from 'path';
 
 const workerSource: string = testable.replace(/export /g, '') + worker.slice(worker.indexOf('\n'));
 const minifiedWorker = esbuild.transformSync(workerSource, {
@@ -35,7 +36,7 @@ async function buildWorkspaceCode(workspace: Workspace) {
             filter: (filepath) => filepath.startsWith('src/'),
         });
         const filesMap = new Map(filesList.map(({ filepath, content }) => [filepath, content]));
-        return await bundle(['src/main.ts'], (filepath) => {
+        return await bundle(['src/main'], (filepath) => {
             for(const extension of extensions) {
                 const file = filesMap.get(filepath + extension);
                 if(file !== undefined) {

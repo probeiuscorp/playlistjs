@@ -1,5 +1,6 @@
 import { WorkspaceFile } from ':/models/Workspaces';
 import esbuild from 'esbuild';
+import { dirname, join } from 'path';
 
 export function getDirectoryEntryPoints(files: WorkspaceFile[]) {
     return files.flatMap(({ path, isEntry }) => {
@@ -16,17 +17,18 @@ export function getFilesFromInMemory(files: WorkspaceFile[]) {
     for(const file of files) {
         lookup.set(file.path, file.content);
     }
-    return (path: string) => {
-        const file = lookup.get(path);
+    return (filename: string) => {
+        const filepath = './' + filename;
+        const file = lookup.get(filepath);
         if(file === undefined) {
-            return Promise.reject(`${path} does not exist`);
+            return Promise.reject(`${filename} does not exist`);
         } else {
             return file;
         }
     };
 }
 
-export async function bundle(entryPoints: string[], getFile: (path: string) => string | Promise<string>) {
+export async function bundle(entryPoints: string[], getFile: (args: string) => string | Promise<string>) {
     const name = 'Playlist.js';
     const build = await esbuild.build({
         write: false,
@@ -40,7 +42,7 @@ export async function bundle(entryPoints: string[], getFile: (path: string) => s
                     build.onResolve({
                         filter: /$/,
                     }, (args) => ({
-                        path: args.path,
+                        path: join(dirname(args.importer), args.path),
                         namespace: name,
                         sideEffects: false,
                     }));
