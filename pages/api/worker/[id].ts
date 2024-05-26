@@ -9,7 +9,6 @@ import esbuild, { BuildFailure } from 'esbuild';
 import { WorkspaceBuildFailure } from ':/components/listen/controller';
 import { NextApiResponse } from 'next';
 import { shallowCloneRef, httpFetchUsing } from 'git-clone-client';
-import { join } from 'path';
 
 const workerSource: string = testable.replace(/export /g, '') + worker.slice(worker.indexOf('\n'));
 const minifiedWorker = esbuild.transformSync(workerSource, {
