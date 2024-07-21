@@ -52,6 +52,7 @@ async function buildWorkspaceCode(workspace: Workspace) {
 
 export default handler(async (req, res, getUser) => {
     const id = req.query.id;
+    applyWorkerHeaders(res);
     if(typeof id !== 'string')
         return void res.status(400).send('Must include :id');
 
