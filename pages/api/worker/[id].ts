@@ -4,17 +4,13 @@ import testable from ':/lib/execute/testable';
 // @ts-ignore
 import worker from ':/lib/execute/worker.js.txt';
 import { Workspace, findWorkspaceById } from ':/models/Workspaces';
-import { bundle, getDirectoryEntryPoints, getFilesFromInMemory } from ':/lib/bundle';
-import esbuild, { BuildFailure } from 'esbuild';
+import { bundle, getDirectoryEntryPoints, getFilesFromInMemory, transformTypeScriptSync, simpleResolveFileImports } from ':/lib/bundle';
+import { BuildFailure } from 'esbuild';
 import { WorkspaceBuildFailure } from ':/components/listen/controller';
 import { NextApiResponse } from 'next';
 import { shallowCloneRef, httpFetchUsing } from 'git-clone-client';
 
-const workerSource: string = testable.replace(/export /g, '') + worker.slice(worker.indexOf('\n'));
-const minifiedWorker = esbuild.transformSync(workerSource, {
-    loader: 'ts',
-    minify: true,
-}).code;
+const minifiedWorker = transformTypeScriptSync(simpleResolveFileImports(testable, worker));
 const [workerBefore, workerAfter] = minifiedWorker.split('/**@license*/');
 export const getWorkerCode = (code: string) => workerBefore + code + workerAfter;
 

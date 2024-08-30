@@ -60,3 +60,14 @@ export async function bundle(entryPoints: string[], getFile: (args: string) => s
     });
     return build.outputFiles[0].text;
 }
+
+export function simpleResolveFileImports(mainFile: string, importedFile: string) {
+    return mainFile.replace(/export /g, '') + importedFile.slice(importedFile.indexOf('\n'));
+}
+
+export function transformTypeScriptSync(typescriptSource: string) {
+    return esbuild.transformSync(typescriptSource, {
+        loader: 'ts',
+        minify: true,
+    }).code;
+}

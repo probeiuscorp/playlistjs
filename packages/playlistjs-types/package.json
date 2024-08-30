@@ -5,12 +5,15 @@
     "homepage": "https://playlistjs.vercel.app",
     "types": "index.d.ts",
     "scripts": {
-        "prepublishOnly": "cp ../../src/lib/execute/std.d.ts.txt index.d.ts"
+        "prepublishOnly": "npx tsx ./prepublish.ts"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/probeiuscorp/playlistjs.git",
+        "url": "git+https://github.com/probeiuscorp/playlistjs.git",
         "directory": "packages/playlistjs-types"
     },
-    "license": "MIT"
+    "license": "MIT",
+    "exports": {
+        "./shim": "./shim.js"
+    }
 }
