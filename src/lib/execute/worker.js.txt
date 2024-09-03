@@ -53,11 +53,11 @@ function silence(duration) {
     };
 }
 
-/* shim: */ {
-const Playlist = {
-    yield: () => undefined
-}
-/* ship: */ }
+/* shim: */
+globalThis.Playlist = {
+    yield: () => undefined,
+};
+/* ship: */
 /**
  * @type {Iterable<string>}
  */
