@@ -65,9 +65,10 @@ export function simpleResolveFileImports(mainFile: string, importedFile: string)
     return mainFile.replace(/export /g, '') + importedFile.slice(importedFile.indexOf('\n'));
 }
 
-export function transformTypeScriptSync(typescriptSource: string) {
+export function transformTypeScriptSync(typescriptSource: string, options?: esbuild.TransformOptions) {
     return esbuild.transformSync(typescriptSource, {
         loader: 'ts',
         minify: true,
+        ...options,
     }).code;
 }

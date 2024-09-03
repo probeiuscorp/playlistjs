@@ -21,5 +21,7 @@ function insertFunctionsIntoGlobalThis(source: string): string {
             + insertFunctionsIntoGlobalThis(source.slice(match.index! + 1));
     }
 }
-const minifiedContent = transformTypeScriptSync(simpleResolveFileImports(insertFunctionsIntoGlobalThis(shimmedContent), testable));
+const minifiedContent = transformTypeScriptSync(simpleResolveFileImports(insertFunctionsIntoGlobalThis(shimmedContent), testable), {
+    format: 'cjs',
+});
 writeFileSync('shim.js', minifiedContent);
