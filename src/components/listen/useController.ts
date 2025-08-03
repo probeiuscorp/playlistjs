@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Controller, ControllerError, createController } from './controller';
 import { Playable } from './Playable';
-import { attempt } from ':/util';
 
 export type ControllerStage =
-    | { type: 'spawning' | 'picked' }
-    | { type: 'pick'; playlists: (string | null)[] }
+    | { type: 'spawning' }
+    | { type: 'pick' | 'picked'; playlists: (string | null)[] }
     | { type: 'error'; reason: ControllerError }
 export function useController(id: string) {
     const [key, setKey] = useState(false);
@@ -17,22 +16,15 @@ export function useController(id: string) {
     useEffect(() => {
         let hasBeenCanceled = false;
         const controller = controllerRef.current = createController(id);
-        void async function() {
-            const [playlists, error] = await attempt(controller.getPlaylists);
-            if(hasBeenCanceled) return;
-
-            if(playlists) {
-                setStage({
-                    type: 'pick',
-                    playlists,
-                });
-            } else {
-                setStage({
-                    type: 'error',
-                    reason: error as ControllerError,
-                });
-            }
-        }();
+        controller.getPlaylists().then((playlists): ControllerStage => ({
+            type: 'pick',
+            playlists,
+        }), (err): ControllerStage => ({
+            type: 'error',
+            reason: err as ControllerError,
+        })).then((stage) => {
+            if (!hasBeenCanceled) setStage(stage);
+        });
         return () => {
             hasBeenCanceled = true;
             controller.close();
@@ -54,15 +46,21 @@ export function useController(id: string) {
             const pulled = await controllerRef.current!.pull();
             setNext(pulled);
         },
-        async setPlaylist(playlist: string | null) {
+        async setPlaylist(playlist: string | null, playlists: (string | null)[]) {
             controllerRef.current!.setPlaylist(playlist);
-            setStage({ type: 'picked' });
-            
+            setStage({ type: 'picked', playlists });
+
             const first = await controllerRef.current!.pull();
             setSong(first);
 
             const next = await controllerRef.current!.pull();
             setNext(next);
+        },
+        async switchPlaylist(playlists: (string | null)[]) {
+            setStage({
+                type: 'pick',
+                playlists,
+            });
         },
     };
 }

@@ -3,7 +3,7 @@ import { Page } from '../Page';
 import { WorkspaceData } from ':/models/Workspaces';
 import { useController } from './useController';
 import { ListenListening } from './ListenListening';
-import { Flex, Text } from '@chakra-ui/react';
+import { Button, Flex, Text } from '@chakra-ui/react';
 import { PickPlaylist } from './PickPlaylist';
 import { ControllerError } from './controller';
 
@@ -53,20 +53,29 @@ export function PageListen({ id }: WorkspaceData) {
                 {stage.type === 'pick' && (
                     <PickPlaylist
                         playlists={stage.playlists}
-                        pick={controller.setPlaylist}
+                        pick={(playlist) => controller.setPlaylist(playlist, stage.playlists)}
                     />
                 )}
                 {stage.type === 'picked' && (
-                    controller.song !== undefined ? (
-                        <ListenListening
-                            playable={controller.song}
-                            upcoming={controller.next}
-                            next={controller.cycle}
-                            reject={controller.rejectNext}
-                        />
-                    ) : (
-                        'Playlist ended'
-                    )
+                    <>
+                        <Flex pb={2}>
+                            <Button onClick={() => {
+                                controller.switchPlaylist(stage.playlists);
+                            }}>
+                                Switch playlist
+                            </Button>
+                        </Flex>
+                        {controller.song !== undefined ? (
+                            <ListenListening
+                                playable={controller.song}
+                                upcoming={controller.next}
+                                next={controller.cycle}
+                                reject={controller.rejectNext}
+                            />
+                        ) : (
+                            'Playlist ended'
+                        )}
+                    </>
                 )}
             </Flex>
         </Page>
