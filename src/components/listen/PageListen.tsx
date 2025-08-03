@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Page } from '../Page';
 import { WorkspaceData } from ':/models/Workspaces';
 import { useController } from './useController';
@@ -40,6 +40,7 @@ function LoadingError({ error }: { error: ControllerError}) {
 export function PageListen({ id }: WorkspaceData) {
     const controller = useController(id);
     const stage = controller.stage;
+    const [autoplay, setAutoplay] = useState(true);
 
     return (
         <Page title="playback">
@@ -58,7 +59,12 @@ export function PageListen({ id }: WorkspaceData) {
                 )}
                 {stage.type === 'picked' && (
                     <>
-                        <Flex pb={2}>
+                        <Flex pb={2} gap={2}>
+                            <Button variant="outline" colorScheme={autoplay ? 'green' : 'blue'} onClick={() => {
+                                setAutoplay(!autoplay);
+                            }}>
+                                Autoplay {autoplay ? 'on' : 'off'}
+                            </Button>
                             <Button onClick={() => {
                                 controller.switchPlaylist(stage.playlists);
                             }}>
@@ -67,6 +73,7 @@ export function PageListen({ id }: WorkspaceData) {
                         </Flex>
                         {controller.song !== undefined ? (
                             <ListenListening
+                                autoplay={autoplay}
                                 playable={controller.song}
                                 upcoming={controller.next}
                                 next={controller.cycle}

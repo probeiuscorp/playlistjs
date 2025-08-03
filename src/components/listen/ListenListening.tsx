@@ -19,19 +19,20 @@ export function formatDuration(seconds: number) {
 }
 
 export type ListenListeningProps = React.PropsWithChildren<{
+    autoplay: boolean;
     playable: Playable
     upcoming: Playable | undefined
     next(): void
     reject(): void
 }>;
-export function ListenListening({ playable, upcoming, next, reject }: ListenListeningProps) {
+export function ListenListening({ autoplay, playable, upcoming, next, reject }: ListenListeningProps) {
     return (
         <div className={styles.container}>
             <div className={styles.videoContainer}>
                 <Box className={styles.video}>
                     <Play
                         playable={playable}
-                        onDone={next}
+                        onDone={() => autoplay && next()}
                     />
                 </Box>
                 <IconButton
