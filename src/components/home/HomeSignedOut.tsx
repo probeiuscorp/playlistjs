@@ -12,21 +12,21 @@ Playlist.yield([neverGonnaGiveYouUp]);
 
 // Loop forever
 Playlist.yield(function*() {
-    while(true) {
-        yield neverGonnaGiveYouUp;
-    }
+  while(true) {
+    yield neverGonnaGiveYouUp;
+  }
 });
 
 // Graphs
 Playlist.yield(function*() {
-    let head = neverGonnaGiveYouUp;
-    do {
-        yield head;
-    } while(
-        head = graph.getEdgesFrom(head).pick((edge) => (
-            edge.weight
-        ))
-    );
+  let head = neverGonnaGiveYouUp;
+  do {
+    yield head;
+  } while(
+    head = graph.getEdgesFrom(head).pick((edge) => (
+      edge.weight
+    ))
+  );
 })
 `;
 

@@ -13,17 +13,17 @@ const togetherForever = 'yPYZpwSpKmA'
 ### Create a playlist
 ```javascript
 Playlist.yield('Rick Astley', [
-    neverGonnaGiveYouUp,
-    togetherForever,
+  neverGonnaGiveYouUp,
+  togetherForever,
 ]);
 ```
 
 ### Any iterable will do
 ```javascript
 Playlist.yield('Never gonna be done', function*() {
-    while(true) {
-        yield neverGonnaGiveYouUp;
-    }
+  while(true) {
+    yield neverGonnaGiveYouUp;
+  }
 });
 ```
 
