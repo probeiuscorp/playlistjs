@@ -60,10 +60,10 @@ export function PageListen({ id }: WorkspaceData) {
                 {stage.type === 'picked' && (
                     <>
                         <Flex pb={2} gap={2}>
-                            <Button variant="outline" colorScheme={autoplay ? 'green' : 'blue'} onClick={() => {
+                            <Button variant="outline" colorScheme={autoplay ? 'blue' : 'red'} onClick={() => {
                                 setAutoplay(!autoplay);
                             }}>
-                                Autoplay {autoplay ? 'on' : 'off'}
+                                {autoplay ? 'Autoplaying' : 'Pause'}
                             </Button>
                             <Button onClick={() => {
                                 controller.switchPlaylist(stage.playlists);
@@ -73,7 +73,13 @@ export function PageListen({ id }: WorkspaceData) {
                         </Flex>
                         {controller.song !== undefined ? (
                             <ListenListening
-                                autoplay={autoplay}
+                                autoplay={() => {
+                                    if (autoplay) {
+                                        controller.cycle();
+                                    } else {
+                                        setAutoplay(true);
+                                    }
+                                }}
                                 playable={controller.song}
                                 upcoming={controller.next}
                                 next={controller.cycle}
