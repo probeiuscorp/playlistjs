@@ -63,7 +63,7 @@ globalThis.Playlist = {
  */
 let $$$playlist;
 /**
- * @type {Map<string, Iterable<string>>}
+ * @type {Map<string, () => Iterable<string>>}
  */
 const $$$map = new Map();
 const Playlist = {
@@ -81,17 +81,18 @@ const Playlist = {
             throw new TypeError('name must be a string');
         }
 
-        const iter = (typeof playlist === 'function' ? playlist() : playlist);
-        if(Symbol.iterator in iter) {
-            $$$map.set(name ?? null, iter);
-        } else throw new TypeError('playlist must be either an iterable or a function that returns an iterable');
+        const iter = (typeof playlist === 'function' ? playlist : () => playlist);
+        $$$map.set(name ?? null, iter);
     },
 };
 
 onmessage = (message) => {
     const msg = JSON.parse(message.data);
     if(msg.type === 'play') {
-        $$$playlist = $$$map.get(msg.playlist)[Symbol.iterator]();
+        const playlist = $$$map.get(msg.playlist)();
+        if(Symbol.iterator in playlist) {
+            $$$playlist = playlist[Symbol.iterator]();
+        } else throw new TypeError('playlist must be either an iterable or a function that returns an iterable');
     } else if(msg.type === 'pull') {
         const next = $$$playlist.next();
         postMessage(JSON.stringify({
