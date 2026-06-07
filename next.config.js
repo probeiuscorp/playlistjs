@@ -6,7 +6,6 @@ module.exports = {
         config.module.rules.push({
             test: [
                 /\.txt$/,
-                /testable.ts$/,
             ],
             // test: /\.txt$/,
             loader: 'raw-loader',

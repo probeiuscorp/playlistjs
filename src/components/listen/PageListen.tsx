@@ -45,8 +45,21 @@ export function PageListen({ id }: WorkspaceData) {
     return (
         <Page title="playback">
             <Flex p={8} flexDirection="column" minHeight="100vh">
-                {stage.type === 'spawning' && (
+                {stage.type === 'spawning' ? (
                     'Loading...'
+                ) : (
+                    <Flex pb={6}>
+                        {controller.buttons.map(({ label, id }) => (
+                            <Button onClick={() => {
+                                controller.sendMessage({
+                                    type: 'button-press',
+                                    id,
+                                });
+                            }} key={id}>
+                                {label}
+                            </Button>
+                        ))}
+                    </Flex>
                 )}
                 {stage.type === 'error' && (
                     <LoadingError error={stage.reason}/>

@@ -1,4 +1,6 @@
+import { Behavior } from ':/lib/execute/testable';
 import { Playable } from './Playable';
+import { ButtonDesc } from './useController';
 
 export type WorkspaceBuildFailure = {
     location?: {
@@ -12,17 +14,25 @@ export type ControllerError =
     | { type: 'unexpected'; message?: string }
     | { type: 'expected'; errors: WorkspaceBuildFailure }
 
+export type ExpectedWorkerMessage =
+    | { type: 'ready'; playlists: string[] }
+    | { type: 'song'; song: Playable }
+    | { type: 'error'; reason: WorkspaceBuildFailure }
+    | { type: 'button'; label: string; id: number }
+export type ToWorkerMessage =
+    | { type: 'button-press'; id: number }
+
 export type Controller = ReturnType<typeof createController>;
 export function createController(id: string) {
     const worker = new Worker(`/api/worker/${id}`);
     const listeners = new Set<(song: Playable) => void>();
+    const [bButtons, setButtons] = Behavior.exec<ButtonDesc[]>([]);
 
     const pendingPlaylists = new Promise<(string | null)[]>((resolve, reject) => {
         worker.onmessage = (message) => {
-            const msg = JSON.parse(message.data);
+            const msg: ExpectedWorkerMessage = JSON.parse(message.data);
             if(msg.type === 'ready') {
-                const playlists: string[] = msg.playlists;
-                resolve(playlists);
+                resolve(msg.playlists);
             } else if(msg.type === 'song') {
                 for(const listener of listeners) {
                     listener(msg.song);
@@ -30,6 +40,8 @@ export function createController(id: string) {
                 listeners.clear();
             } else if(msg.type === 'error') {
                 reject({ type: 'expected', errors: msg.reason as WorkspaceBuildFailure } satisfies ControllerError);
+            } else if (msg.type === 'button') {
+                setButtons([...bButtons.current, msg]);
             }
         };
     });
@@ -50,5 +62,9 @@ export function createController(id: string) {
             listeners.add(resolve);
         }),
         close: () => worker.terminate(),
+        bButtons,
+        sendMessage: (message: ToWorkerMessage) => {
+            worker.postMessage(JSON.stringify(message));
+        },
     };
 }

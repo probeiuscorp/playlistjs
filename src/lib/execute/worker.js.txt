@@ -1,4 +1,4 @@
-import { shuffle, split, rehead, mapsort, pick, fromSongLike } from './testable';
+import { shuffle, split, rehead, mapsort, pick, fromSongLike, Revent } from './testable';
 
 Set.prototype.toArray = function() {
     return Array.from(this);
@@ -55,6 +55,10 @@ function silence(duration) {
 
 /* shim: */
 globalThis.Playlist = {
+    eSwitch: Revent(() => undefined),
+    input: {
+        button: () => Revent(() => undefined),
+    },
     yield: () => undefined,
 };
 /* ship: */
@@ -66,7 +70,27 @@ let $$$playlist;
  * @type {Map<string, () => Iterable<string>>}
  */
 const $$$map = new Map();
+let nextId = 0;
+/**
+ * @type {Map<number, (data: unknown) => void>}
+ */
+const notifs = new Map();
+const [eSwitch, notifySwitchedPlaylist] = Revent.exec();
 const Playlist = {
+    eSwitch,
+    input: {
+        button: (label) => {
+            const id = nextId++;
+            postMessage(JSON.stringify({
+                type: 'button',
+                id,
+                label,
+            }));
+            return Revent((push) => {
+                notifs.set(id, () => push(undefined));
+            });
+        },
+    },
     yield(a, b) {
         let name = undefined;
         let playlist;
@@ -89,6 +113,7 @@ const Playlist = {
 onmessage = (message) => {
     const msg = JSON.parse(message.data);
     if(msg.type === 'play') {
+        notifySwitchedPlaylist();
         const playlist = $$$map.get(msg.playlist)();
         if(Symbol.iterator in playlist) {
             $$$playlist = playlist[Symbol.iterator]();
@@ -100,6 +125,8 @@ onmessage = (message) => {
             song: fromSongLike(next.value),
             done: !!next.done,
         }));
+    } else if(msg.type === 'button-press') {
+        notifs.get(msg.id)?.(undefined);
     }
 };
 

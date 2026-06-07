@@ -31,15 +31,16 @@ declare function fromSongLike(songLike: song): song;
 
 type playlist = Iterable<song> | (() => Iterable<song>);
 declare const Playlist: {
+    eSwitch: Revent<undefined>
     yield(playlist: playlist): void
     yield(name: string, playlist: playlist): void
 
     readonly input: {
-        string(label: string): string
-        strings(): string[]
-        number(label: string): number
-        boolean(label: boolean): boolean
-        options<T>(options: [string, T][]): T
+        string(label: string): Behavior<string>
+        number(label: string): Behavior<number>
+        boolean(label: boolean): Behavior<boolean>
+        options<T>(options: [string, T][]): Behavior<T>
+        button(label: string): Revent<undefined>
     }
 };
 
@@ -105,3 +106,19 @@ interface Map<K, V> {
 interface Set<T> {
     toArray(): T[]
 }
+
+interface Revent<T> {
+    map: <U>(fn: (data: T) => U) => Revent<U>
+    on: (callback: (data: T) => void) => () => void
+}
+declare const Revent: <T>(executor: (push: (data: T) => void) => void) => Revent<T>;
+
+interface Behavior<T> {
+    current: T
+    map: <U>(fn: (data: T) => U) => Behavior<U>
+    onChange: (callback: (data: T, unsub: () => void) => void) => () => void
+    onValue: (callback: (data: T, unsub: () => void) => void) => () => void
+}
+declare const Behavior: (<T>(initial: T, executor: (push: (data: T) => void) => void) => Behavior<T>) & {
+    join: <T>(bba: Behavior<Behavior<T>>) => Behavior<T>
+};

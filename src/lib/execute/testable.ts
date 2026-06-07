@@ -158,3 +158,105 @@ export function fromSongLike(songLike: unknown): Playable | undefined {
     return playable;
 }
 fromSongLike.ALREADY_SONG = Symbol('fromSongLike.ALREADY_SONG');
+
+export type Revent<T> = {
+    map: <U>(fn: (data: T) => U) => Revent<U>
+    on: (callback: (data: T) => void) => () => void
+}
+export type Behavior<T> = {
+    current: T
+    map: <U>(fn: (data: T) => U) => Behavior<U>
+    onChange: (callback: (data: T, unsub: () => void) => void) => () => void
+    onValue: (callback: (data: T, unsub: () => void) => void) => () => void
+}
+export function Revent<T>(executor: (push: (data: T)  => void) => void): Revent<T> {
+    const callbacks = new Set<(data: T) => void>();
+    executor((value) => {
+        callbacks.forEach((callback) => {
+            callback(value);
+        });
+    });
+    return {
+        map: (fn) => {
+            return Revent((push) => {
+                callbacks.add((data) => {
+                    push(fn(data));
+                });
+            });
+        },
+        on: (callback) => {
+            callbacks.add(callback);
+            return () => {
+                callbacks.delete(callback);
+            };
+        },
+    };
+}
+Revent.exec = function<T>(): [Revent<T>, (data: T) => void] {
+    let push!: (data: T) => void;
+    const revent = Revent<T>((push0) => {
+        push = push0;
+    });
+    return [revent, push];
+};
+
+export function Behavior<T>(givenInitial: T, executor: (push: (data: T) => void) => void): Behavior<T> {
+    let isSync = true;
+    let initial = givenInitial;
+    const eUpdate = Revent<T>((push) => {
+        executor((data) => {
+            push(data);
+            if (isSync) {
+                initial = data;
+            } else {
+                behavior.current = data;
+            }
+        });
+    });
+    isSync = false;
+    const behavior: Behavior<T> = {
+        current: initial,
+        map: (fn) => {
+            return Behavior(fn(initial), (push) => {
+                eUpdate.on((update) => {
+                    push(fn(update));
+                });
+            });
+        },
+        onChange: (callback) => {
+            const unsub = eUpdate.on((data) => {
+                callback(data, unsub);
+            });
+            return unsub;
+        },
+        onValue: (callback) => {
+            let cancel = false;
+            callback(behavior.current, () => {
+                cancel = true;
+            });
+            if (cancel) {
+                return () => undefined;
+            } else {
+                return behavior.onChange(callback);
+            }
+        },
+    };
+    return behavior;
+}
+Behavior.join = function<T>(bba: Behavior<Behavior<T>>): Behavior<T> {
+    return Behavior(bba.current.current, (push) => {
+        bba.onChange((ba) => {
+            ba.onChange(push);
+        });
+    });
+};
+Behavior.exec = function<T>(initial: T): [
+    Behavior<T>,
+    (data: T) => void,
+] {
+    let put!: (data: T) => void;
+    const behavior = Behavior(initial, (push) => {
+        put = push;
+    });
+    return [behavior, put];
+};

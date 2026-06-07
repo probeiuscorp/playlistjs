@@ -1,6 +1,6 @@
 import { handler } from ':/lib/handler';
 // @ts-ignore
-import testable from ':/lib/execute/testable';
+import testable from 'raw-loader!:/lib/execute/testable';
 // @ts-ignore
 import worker from ':/lib/execute/worker.js.txt';
 import { Workspace, findWorkspaceById } from ':/models/Workspaces';
