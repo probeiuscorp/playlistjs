@@ -36,10 +36,10 @@ declare const Playlist: {
     yield(name: string, playlist: playlist): void
 
     readonly input: {
-        string(label: string): Behavior<string>
-        number(label: string): Behavior<number>
-        boolean(label: boolean): Behavior<boolean>
-        options<T>(options: [string, T][]): Behavior<T>
+        string(label: string, initial?: string): Behavior<string>
+        number(label: string, initial: number): Behavior<number>
+        boolean(label: string, initial?: boolean): Behavior<boolean>
+        select<T extends string>(label: string, options: [T, ...T[]], initial?: T): Behavior<T>
         button(label: string): Revent<undefined>
     }
 };

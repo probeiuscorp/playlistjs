@@ -6,6 +6,7 @@ import { ListenListening } from './ListenListening';
 import { Button, Flex, Text } from '@chakra-ui/react';
 import { PickPlaylist } from './PickPlaylist';
 import { ControllerError } from './controller';
+import { ListenInputs } from './ListenInputs';
 
 function LoadingError({ error }: { error: ControllerError}) {
     return (
@@ -48,18 +49,7 @@ export function PageListen({ id }: WorkspaceData) {
                 {stage.type === 'spawning' ? (
                     'Loading...'
                 ) : (
-                    <Flex pb={6}>
-                        {controller.buttons.map(({ label, id }) => (
-                            <Button onClick={() => {
-                                controller.sendMessage({
-                                    type: 'button-press',
-                                    id,
-                                });
-                            }} key={id}>
-                                {label}
-                            </Button>
-                        ))}
-                    </Flex>
+                    <ListenInputs controller={controller} />
                 )}
                 {stage.type === 'error' && (
                     <LoadingError error={stage.reason}/>

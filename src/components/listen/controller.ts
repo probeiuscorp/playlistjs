@@ -1,6 +1,6 @@
 import { Behavior } from ':/lib/execute/testable';
 import { Playable } from './Playable';
-import { ButtonDesc } from './useController';
+import { InputDesc } from './useController';
 
 export type WorkspaceBuildFailure = {
     location?: {
@@ -18,15 +18,15 @@ export type ExpectedWorkerMessage =
     | { type: 'ready'; playlists: string[] }
     | { type: 'song'; song: Playable }
     | { type: 'error'; reason: WorkspaceBuildFailure }
-    | { type: 'button'; label: string; id: number }
+    | { type: 'input'; input: InputDesc }
 export type ToWorkerMessage =
-    | { type: 'button-press'; id: number }
+    | { type: 'input-change'; id: number; value: number | boolean | string | undefined }
 
 export type Controller = ReturnType<typeof createController>;
 export function createController(id: string) {
     const worker = new Worker(`/api/worker/${id}`);
     const listeners = new Set<(song: Playable) => void>();
-    const [bButtons, setButtons] = Behavior.exec<ButtonDesc[]>([]);
+    const [bInputs, setInputs] = Behavior.exec<InputDesc[]>([]);
 
     const pendingPlaylists = new Promise<(string | null)[]>((resolve, reject) => {
         worker.onmessage = (message) => {
@@ -40,8 +40,8 @@ export function createController(id: string) {
                 listeners.clear();
             } else if(msg.type === 'error') {
                 reject({ type: 'expected', errors: msg.reason as WorkspaceBuildFailure } satisfies ControllerError);
-            } else if (msg.type === 'button') {
-                setButtons([...bButtons.current, msg]);
+            } else if (msg.type === 'input') {
+                setInputs([...bInputs.current, msg.input]);
             }
         };
     });
@@ -62,7 +62,7 @@ export function createController(id: string) {
             listeners.add(resolve);
         }),
         close: () => worker.terminate(),
-        bButtons,
+        bInputs,
         sendMessage: (message: ToWorkerMessage) => {
             worker.postMessage(JSON.stringify(message));
         },

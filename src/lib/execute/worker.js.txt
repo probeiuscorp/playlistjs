@@ -1,4 +1,4 @@
-import { shuffle, split, rehead, mapsort, pick, fromSongLike, Revent } from './testable';
+import { shuffle, split, rehead, mapsort, pick, fromSongLike, Revent, Behavior } from './testable';
 
 Set.prototype.toArray = function() {
     return Array.from(this);
@@ -76,20 +76,37 @@ let nextId = 0;
  */
 const notifs = new Map();
 const [eSwitch, notifySwitchedPlaylist] = Revent.exec();
+function inputKind(minDesc, make) {
+    const id = nextId++;
+    postMessage(JSON.stringify({
+        type: 'input',
+        input: {
+            id,
+            ...minDesc,
+        },
+    }));
+    return make((push) => {
+        notifs.set(id, push);
+    });
+}
+const leveledInput = (type, defaultInitial) => (label, initial = defaultInitial) => inputKind({
+    type,
+    label,
+    initial,
+}, (exec) => Behavior(initial, exec));
 const Playlist = {
     eSwitch,
     input: {
-        button: (label) => {
-            const id = nextId++;
-            postMessage(JSON.stringify({
-                type: 'button',
-                id,
-                label,
-            }));
-            return Revent((push) => {
-                notifs.set(id, () => push(undefined));
-            });
-        },
+        button: (label) => inputKind({ type: 'button', label }, Revent),
+        string: leveledInput('string', ''),
+        number: leveledInput('number', 0),
+        boolean: leveledInput('boolean', false),
+        select: (label, options, initial = options[0]) => inputKind({
+            type: 'select',
+            label,
+            options,
+            initial,
+        }, (exec) => Behavior(initial, exec)),
     },
     yield(a, b) {
         let name = undefined;
@@ -125,8 +142,8 @@ onmessage = (message) => {
             song: fromSongLike(next.value),
             done: !!next.done,
         }));
-    } else if(msg.type === 'button-press') {
-        notifs.get(msg.id)?.(undefined);
+    } else if(msg.type === 'input-change') {
+        notifs.get(msg.id)?.(msg.value);
     }
 };
 

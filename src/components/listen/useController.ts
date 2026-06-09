@@ -7,12 +7,18 @@ export type ControllerStage =
     | { type: 'spawning' }
     | { type: 'pick' | 'picked'; playlists: (string | null)[] }
     | { type: 'error'; reason: ControllerError }
-export type ButtonDesc = { label: string; id: number };
+export type InputDesc = (
+    | { type: 'button' }
+    | { type: 'string'; initial: string }
+    | { type: 'number'; initial: number }
+    | { type: 'boolean'; initial: boolean }
+    | { type: 'select'; initial: string; options: string[] }
+    ) & { label: string; id: number }
 export function useController(id: string) {
     const [key, setKey] = useState(false);
     const [song, setSong] = useState<Playable | undefined>(undefined);
     const [next, setNext] = useState<Playable | undefined>(undefined);
-    const [buttons, setButtons] = useState<ButtonDesc[]>([]);
+    const [inputs, setInputs] = useState<InputDesc[]>([]);
     const [{ sendMessage }, setSendMessage] = useState<{ sendMessage: (message: ToWorkerMessage) => void }>({ sendMessage: () => undefined });
     const [stage, setStage] = useState<ControllerStage>({ type: 'spawning' });
     const controllerRef = useRef<Controller>();
@@ -22,7 +28,7 @@ export function useController(id: string) {
         const controller = controllerRef.current = createController(id);
         setSendMessage({ sendMessage: controller.sendMessage });
         const unsubs = [
-            controller.bButtons.onValue((buttons) => setButtons(buttons)),
+            controller.bInputs.onValue((buttons) => setInputs(buttons)),
         ];
         controller.getPlaylists().then((playlists): ControllerStage => ({
             type: 'pick',
@@ -45,7 +51,7 @@ export function useController(id: string) {
         song,
         next,
         stage,
-        buttons,
+        inputs,
         sendMessage,
         async rejectNext() {
             const next = await controllerRef.current!.pull();
