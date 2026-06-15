@@ -1,6 +1,9 @@
 import React, { PropsWithChildren } from 'react';
-import { Flex, Button, FormLabel, Input, NumberInput, NumberInputField, Select, Switch } from '@chakra-ui/react';
+import { Flex, Button, FormLabel, Input, NumberInput, NumberInputField, Select, Switch, Slider, SliderTrack, SliderFilledTrack, SliderThumb, SliderMark } from '@chakra-ui/react';
 import { InputDesc, useController } from './useController';
+import { stable } from ':/util/stable';
+import { Behavior } from ':/lib/execute/testable';
+import { BehaviorConsumer } from ':/hooks/useBehavior';
 
 function VerticalStack({ children }: PropsWithChildren) {
     return (
@@ -10,6 +13,7 @@ function VerticalStack({ children }: PropsWithChildren) {
     );
 }
 
+const track = stable((input: InputDesc & { type: 'slider'}) => Behavior.exec(input.initial));
 export function ListenInputs({ controller }: {
     controller: ReturnType<typeof useController>
 }) {
@@ -25,7 +29,7 @@ export function ListenInputs({ controller }: {
     }
 
     return (
-        <Flex flexWrap="wrap" alignItems="center" pb={6} gap={3}>
+        <Flex flexWrap="wrap" alignItems="center" pb={6} columnGap={3} rowGap={1}>
             {inputs.map((input) => input.type === 'button' ? (
                 <Button onClick={() => send(input, undefined)} key={input.id}>
                     {input.label}
@@ -50,6 +54,42 @@ export function ListenInputs({ controller }: {
                     }}>
                         <NumberInputField />
                     </NumberInput>
+                </VerticalStack>
+            ) : input.type === 'slider' ? (
+                <VerticalStack key={input.id}>
+                    <BehaviorConsumer behavior={track(input)[0]}>
+                        {current => <span>
+                            {input.label}{' '}
+                            <span style={{ fontSize: 'small' }}>
+                                ({current.toPrecision(3)})
+                            </span>
+                        </span>}
+                    </BehaviorConsumer>
+                    <Slider
+                        width={140}
+                        min={input.min}
+                        max={input.max}
+                        step={input.step ?? 0.001}
+                        defaultValue={input.initial}
+                        onChange={(value) => track(input)[1](value)}
+                        onChangeEnd={(value) => send(input, value)}
+                    >
+                        {[input.min, (input.min + input.max) / 2, input.max].map((value, i) => (
+                            <SliderMark
+                                value={value}
+                                key={i}
+                                mt={2}
+                                fontSize="xs"
+                                transform={`translateX(${[50, -50, -150][i]}%)`}
+                            >
+                                {value}
+                            </SliderMark>
+                        ))}
+                        <SliderTrack>
+                            <SliderFilledTrack />
+                        </SliderTrack>
+                        <SliderThumb />
+                    </Slider>
                 </VerticalStack>
             ) : input.type === 'select' ? (
                 <VerticalStack key={input.id}>

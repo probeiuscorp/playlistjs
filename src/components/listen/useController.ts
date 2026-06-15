@@ -13,6 +13,7 @@ export type InputDesc = (
     | { type: 'number'; initial: number }
     | { type: 'boolean'; initial: boolean }
     | { type: 'select'; initial: string; options: string[] }
+    | { type: 'slider'; initial: number; min: number; max: number; step: number }
     ) & { label: string; id: number }
 export function useController(id: string) {
     const [key, setKey] = useState(false);

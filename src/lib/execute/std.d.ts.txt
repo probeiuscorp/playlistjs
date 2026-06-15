@@ -38,6 +38,12 @@ declare const Playlist: {
     readonly input: {
         string(label: string, initial?: string): Behavior<string>
         number(label: string, initial: number): Behavior<number>
+        slider(label: string, init?: number | {
+            min: number
+            max: number
+            initial: number
+            step?: number
+        }): Behavior<number>
         boolean(label: string, initial?: boolean): Behavior<boolean>
         select<T extends string>(label: string, options: [T, ...T[]], initial?: T): Behavior<T>
         button(label: string): Revent<undefined>
