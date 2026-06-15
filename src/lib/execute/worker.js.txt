@@ -58,6 +58,10 @@ globalThis.Playlist = {
     eSwitch: Revent(() => undefined),
     input: {
         button: () => Revent(() => undefined),
+        string: (_, initial= '') => Behavior(initial, () => undefined),
+        number: (_, initial = 0) => Behavior(initial, () => undefined),
+        boolean: (_, initial = false) => Behavior(initial, () => undefined),
+        select: (_, options, initial = options[0]) => Behavior(initial, () => undefined),
     },
     yield: () => undefined,
 };
