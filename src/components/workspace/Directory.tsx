@@ -17,121 +17,121 @@ import { workspaceIdAtom } from './PageWorkspace';
 import { useInterval } from '@chakra-ui/react';
 
 const saveAction = action((get, set) => {
-    const isDirty = get(workspace.isDirty);
-    if(!isDirty) return;
+  const isDirty = get(workspace.isDirty);
+  if(!isDirty) return;
 
-    const id = get(workspaceIdAtom);
-    const directory = set(workspace.serialize);
+  const id = get(workspaceIdAtom);
+  const directory = set(workspace.serialize);
 
-    set(workspace.isDirty, false);
-    fetch(`/api/workspaces/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(directory),
-    });
+  set(workspace.isDirty, false);
+  fetch(`/api/workspaces/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(directory),
+  });
 });
 
 export function Directory() {
-    const [directory, setDirectory] = useAtom(workspace.directory);
-    const addFile = useAction(workspace.addFile);
-    const save = useAction(saveAction);
+  const [directory, setDirectory] = useAtom(workspace.directory);
+  const addFile = useAction(workspace.addFile);
+  const save = useAction(saveAction);
 
-    const addGenericFile = async (kind: FileKind) => {
-        const name = await Modals.open(ModalChangeName);
-        if(name) {
-            addFile({
-                kind,
-                name,
-            });
-        }    
-    };
+  const addGenericFile = async (kind: FileKind) => {
+    const name = await Modals.open(ModalChangeName);
+    if(name) {
+      addFile({
+        kind,
+        name,
+      });
+    }
+  };
 
-    const handleAddFile = () => addGenericFile('file');
-    const handleAddNote = () => addGenericFile('note');
-    const handleDragEnd: OnDragEndResponder = ({ source, destination }) => {
-        if(destination) {
-            setDirectory(produce(files => {
-                const [reorderedItem] = files.splice(source.index, 1);
-                files.splice(destination.index, 0, reorderedItem);
-            }));
-        }
-    };
+  const handleAddFile = () => addGenericFile('file');
+  const handleAddNote = () => addGenericFile('note');
+  const handleDragEnd: OnDragEndResponder = ({ source, destination }) => {
+    if(destination) {
+      setDirectory(produce(files => {
+        const [reorderedItem] = files.splice(source.index, 1);
+        files.splice(destination.index, 0, reorderedItem);
+      }));
+    }
+  };
 
-    const container = useFocus();
-    useHotkey('alt + shift? + n', ({ shift }) => {
-        if(shift) {
-            handleAddNote();
-        } else {
-            handleAddFile();
-        }
-    });
-    useHotkey('alt + d', () => {
-        container.focus();
-    });
-    useHotkey('ctrl + s', save);
-    useInterval(save, 3e3);
-    
-    return (
-        <div className={styles.wrapper} ref={container.ref}>
-            <div className={styles.actions}>
-                <Tippy content="Home" placement="bottom" animation="shift-away">
-                    <a className="action" href="/">
-                        <VscHome/>
-                    </a>
-                </Tippy>
-                <DirectorySaveButton/>
-                <div className={styles.actionsSpacer}/>
-                <Tippy content="New file" placement="bottom" animation="shift-away">
-                    <span className="action" {...click(handleAddFile)}>
-                        <VscNewFile/>
-                    </span>
-                </Tippy>
-                <Tippy content="New note" placement="bottom" animation="shift-away">
-                    <span className="action" {...click(handleAddNote)}>
-                        <VscNewFolder/>
-                    </span>
-                </Tippy>
+  const container = useFocus();
+  useHotkey('alt + shift? + n', ({ shift }) => {
+    if(shift) {
+      handleAddNote();
+    } else {
+      handleAddFile();
+    }
+  });
+  useHotkey('alt + d', () => {
+    container.focus();
+  });
+  useHotkey('ctrl + s', save);
+  useInterval(save, 3e3);
+
+  return (
+    <div className={styles.wrapper} ref={container.ref}>
+      <div className={styles.actions}>
+        <Tippy content="Home" placement="bottom" animation="shift-away">
+          <a className="action" href="/">
+            <VscHome/>
+          </a>
+        </Tippy>
+        <DirectorySaveButton/>
+        <div className={styles.actionsSpacer}/>
+        <Tippy content="New file" placement="bottom" animation="shift-away">
+          <span className="action" {...click(handleAddFile)}>
+            <VscNewFile/>
+          </span>
+        </Tippy>
+        <Tippy content="New note" placement="bottom" animation="shift-away">
+          <span className="action" {...click(handleAddNote)}>
+            <VscNewFolder/>
+          </span>
+        </Tippy>
+      </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="file-tree">
+          {provided => (
+            <div
+              className={styles.container}
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              {directory.map((id, i) => (
+                <Draggable index={i} draggableId={id} key={id}>
+                  {provided => (
+                    <DirectoryFile
+                      id={id}
+                      props={{ ref: provided.innerRef, ...provided.draggableProps }}
+                      handle={provided.dragHandleProps}
+                    />
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
             </div>
-            <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="file-tree">
-                    {provided => (
-                        <div
-                            className={styles.container}
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            {directory.map((id, i) => (
-                                <Draggable index={i} draggableId={id} key={id}>
-                                    {provided => (
-                                        <DirectoryFile
-                                            id={id}
-                                            props={{ ref: provided.innerRef, ...provided.draggableProps }}
-                                            handle={provided.dragHandleProps}
-                                        />
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
-        </div>
-    );
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
+  );
 }
 
 function DirectorySaveButton() {
-    const isDirty = useAtomValue(workspace.isDirty);
-    const save = useAction(saveAction);
+  const isDirty = useAtomValue(workspace.isDirty);
+  const save = useAction(saveAction);
 
-    if(isDirty) {
-        return (
-            <Tippy content="Save" placement="bottom" animation="shift-away">
-                <span className="action" {...click(save)} style={{ opacity: 0.5 }}>
-                    <VscSave/>
-                </span>
-            </Tippy>
-        );
-    } else {
-        return null;
-    }
+  if(isDirty) {
+    return (
+      <Tippy content="Save" placement="bottom" animation="shift-away">
+        <span className="action" {...click(save)} style={{ opacity: 0.5 }}>
+          <VscSave/>
+        </span>
+      </Tippy>
+    );
+  } else {
+    return null;
+  }
 }

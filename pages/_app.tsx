@@ -8,34 +8,34 @@ import 'tippy.js/animations/shift-away.css';
 import '../styles/globals.css';
 
 const theme = extendTheme({
-    config: {
-        initialColorMode: 'dark',
-        useSystemColorMode: false,
-    },
-    fonts: {
-        heading: 'Inter',
-        body: 'Open Sans',
-    },
+  config: {
+    initialColorMode: 'dark',
+    useSystemColorMode: false,
+  },
+  fonts: {
+    heading: 'Inter',
+    body: 'Open Sans',
+  },
 });
 
 const justMakeItDarkThemeMan: typeof localStorageManager = {
-    type: 'localStorage',
-    get: () => 'dark',
-    set: () => undefined,
-    ssr: false,
+  type: 'localStorage',
+  get: () => 'dark',
+  set: () => undefined,
+  ssr: false,
 };
 
 export default function App({ Component, pageProps: { session, ...pageProps }}: AppProps) {
-    return (
-        <SessionProvider session={session}>
-            <ChakraProvider
-                theme={theme}
-                colorModeManager={justMakeItDarkThemeMan}
-                toastOptions={{ defaultOptions: { position: 'bottom-right' }}}
-                resetCSS
-            >
-                <Component {...pageProps}/>
-            </ChakraProvider>
-        </SessionProvider>
-    );
+  return (
+    <SessionProvider session={session}>
+      <ChakraProvider
+        theme={theme}
+        colorModeManager={justMakeItDarkThemeMan}
+        toastOptions={{ defaultOptions: { position: 'bottom-right' }}}
+        resetCSS
+      >
+        <Component {...pageProps}/>
+      </ChakraProvider>
+    </SessionProvider>
+  );
 }

@@ -1,19 +1,19 @@
 {
-    "name": "playlistjs-types",
-    "version": "0.0.7",
-    "description": "TypeScript definitions for playlistjs",
-    "homepage": "https://playlistjs.vercel.app",
-    "types": "index.d.ts",
-    "scripts": {
-        "prepublishOnly": "npx tsx ./prepublish.ts"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/probeiuscorp/playlistjs.git",
-        "directory": "packages/playlistjs-types"
-    },
-    "license": "MIT",
-    "exports": {
-        "./shim": "./shim.js"
-    }
+  "name": "playlistjs-types",
+  "version": "0.0.7",
+  "description": "TypeScript definitions for playlistjs",
+  "homepage": "https://playlistjs.vercel.app",
+  "types": "index.d.ts",
+  "scripts": {
+    "prepublishOnly": "npx tsx ./prepublish.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/probeiuscorp/playlistjs.git",
+    "directory": "packages/playlistjs-types"
+  },
+  "license": "MIT",
+  "exports": {
+    "./shim": "./shim.js"
+  }
 }

@@ -1,70 +1,70 @@
 import { shuffle, split, rehead, mapsort, pick, fromSongLike, Revent, Behavior } from './testable';
 
 Set.prototype.toArray = function() {
-    return Array.from(this);
+  return Array.from(this);
 };
 
 Map.prototype.toArray = function() {
-    return Array.from(this);
+  return Array.from(this);
 };
 
 Array.prototype.shuffle = function() {
-    return shuffle(this);
+  return shuffle(this);
 };
 
 Array.prototype.split = function(index) {
-    return split(this, index);
+  return split(this, index);
 };
 
 Array.prototype.rehead = function(index) {
-    return rehead(this, index);
+  return rehead(this, index);
 };
 
 Array.prototype.mapsort = function(...args) {
-    return mapsort(this, ...args);
+  return mapsort(this, ...args);
 };
 
 Array.prototype.pick = function(...args) {
-    return pick(this, ...args);
+  return pick(this, ...args);
 };
 
 const $$$oldRandom = Math.random;
 Math.random = function(a, b) {
-    if(typeof a === 'number') {
-        if(typeof b === 'number') {
-            return $$$oldRandom() * (b - a) + a;
-        } else {
-            return $$$oldRandom() * a;
-        }
+  if(typeof a === 'number') {
+    if(typeof b === 'number') {
+      return $$$oldRandom() * (b - a) + a;
     } else {
-        return $$$oldRandom();
+      return $$$oldRandom() * a;
     }
+  } else {
+    return $$$oldRandom();
+  }
 };
 
 function chance(chance) {
-    return Math.random() < chance;
+  return Math.random() < chance;
 }
 
 function silence(duration) {
-    return {
-        [fromSongLike.ALREADY_SONG]: true,
-        kind: 'silence',
-        duration: duration * 1e3,
-    };
+  return {
+    [fromSongLike.ALREADY_SONG]: true,
+    kind: 'silence',
+    duration: duration * 1e3,
+  };
 }
 
 /* shim: */
 globalThis.Playlist = {
-    eSwitch: Revent(() => undefined),
-    input: {
-        button: () => Revent(() => undefined),
-        string: (_, initial = '') => Behavior(initial, () => undefined),
-        number: (_, initial = 0) => Behavior(initial, () => undefined),
-        slider: (_, init) => Behavior(init?.initial ?? init ?? 0.5, () => undefined),
-        boolean: (_, initial = false) => Behavior(initial, () => undefined),
-        select: (_, options, initial = options[0]) => Behavior(initial, () => undefined),
-    },
-    yield: () => undefined,
+  eSwitch: Revent(() => undefined),
+  input: {
+    button: () => Revent(() => undefined),
+    string: (_, initial = '') => Behavior(initial, () => undefined),
+    number: (_, initial = 0) => Behavior(initial, () => undefined),
+    slider: (_, init) => Behavior(init?.initial ?? init ?? 0.5, () => undefined),
+    boolean: (_, initial = false) => Behavior(initial, () => undefined),
+    select: (_, options, initial = options[0]) => Behavior(initial, () => undefined),
+  },
+  yield: () => undefined,
 };
 /* ship: */
 /**
@@ -82,93 +82,93 @@ let nextId = 0;
 const notifs = new Map();
 const [eSwitch, notifySwitchedPlaylist] = Revent.exec();
 function inputKind(minDesc, make) {
-    const id = nextId++;
-    postMessage(JSON.stringify({
-        type: 'input',
-        input: {
-            id,
-            ...minDesc,
-        },
-    }));
-    return make((push) => {
-        notifs.set(id, push);
-    });
+  const id = nextId++;
+  postMessage(JSON.stringify({
+    type: 'input',
+    input: {
+      id,
+      ...minDesc,
+    },
+  }));
+  return make((push) => {
+    notifs.set(id, push);
+  });
 }
 const leveledInput = (type, defaultInitial) => (label, initial = defaultInitial) => inputKind({
-    type,
-    label,
-    initial,
+  type,
+  label,
+  initial,
 }, (exec) => Behavior(initial, exec));
 const Playlist = {
-    eSwitch,
-    input: {
-        button: (label) => inputKind({ type: 'button', label }, Revent),
-        string: leveledInput('string', ''),
-        number: leveledInput('number', 0),
-        slider: (label, init) => inputKind({
-            type: 'slider',
-            label,
-            ...(typeof init === 'object' ? {
-                min: init.min,
-                max: init.max,
-                step: init.step,
-                initial: init.initial,
-            } : {
-                min: 0,
-                max: 1,
-                initial: init ?? 0.5,
-            }),
-        }, (exec) => Behavior(init?.initial ?? init ?? 0.5, exec)),
-        boolean: leveledInput('boolean', false),
-        select: (label, options, initial = options[0]) => inputKind({
-            type: 'select',
-            label,
-            options,
-            initial,
-        }, (exec) => Behavior(initial, exec)),
-    },
-    yield(a, b) {
-        let name = undefined;
-        let playlist;
-        if(b) {
-            name = a;
-            playlist = b;
-        } else {
-            playlist = a;
-        }
+  eSwitch,
+  input: {
+    button: (label) => inputKind({ type: 'button', label }, Revent),
+    string: leveledInput('string', ''),
+    number: leveledInput('number', 0),
+    slider: (label, init) => inputKind({
+      type: 'slider',
+      label,
+      ...(typeof init === 'object' ? {
+        min: init.min,
+        max: init.max,
+        step: init.step,
+        initial: init.initial,
+      } : {
+        min: 0,
+        max: 1,
+        initial: init ?? 0.5,
+      }),
+    }, (exec) => Behavior(init?.initial ?? init ?? 0.5, exec)),
+    boolean: leveledInput('boolean', false),
+    select: (label, options, initial = options[0]) => inputKind({
+      type: 'select',
+      label,
+      options,
+      initial,
+    }, (exec) => Behavior(initial, exec)),
+  },
+  yield(a, b) {
+    let name = undefined;
+    let playlist;
+    if(b) {
+      name = a;
+      playlist = b;
+    } else {
+      playlist = a;
+    }
 
-        if(!(name === undefined || typeof name === 'string')) {
-            throw new TypeError('name must be a string');
-        }
+    if(!(name === undefined || typeof name === 'string')) {
+      throw new TypeError('name must be a string');
+    }
 
-        const iter = (typeof playlist === 'function' ? playlist : () => playlist);
-        $$$map.set(name ?? null, iter);
-    },
+    const iter = (typeof playlist === 'function' ? playlist : () => playlist);
+    $$$map.set(name ?? null, iter);
+  },
 };
 
 onmessage = (message) => {
-    const msg = JSON.parse(message.data);
-    if(msg.type === 'play') {
-        notifySwitchedPlaylist();
-        const playlist = $$$map.get(msg.playlist)();
-        if(Symbol.iterator in playlist) {
-            $$$playlist = playlist[Symbol.iterator]();
-        } else throw new TypeError('playlist must be either an iterable or a function that returns an iterable');
-    } else if(msg.type === 'pull') {
-        const next = $$$playlist.next();
-        postMessage(JSON.stringify({
-            type: 'song',
-            song: fromSongLike(next.value),
-            done: !!next.done,
-        }));
-    } else if(msg.type === 'input-change') {
-        notifs.get(msg.id)?.(msg.value);
-    }
+  const msg = JSON.parse(message.data);
+  if(msg.type === 'play') {
+    notifySwitchedPlaylist();
+    const playlist = $$$map.get(msg.playlist)();
+    if(Symbol.iterator in playlist) {
+      $$$playlist = playlist[Symbol.iterator]();
+    } else throw new TypeError('playlist must be either an iterable or a function that returns an iterable');
+  } else if(msg.type === 'pull') {
+    const next = $$$playlist.next();
+    postMessage(JSON.stringify({
+      type: 'song',
+      song: fromSongLike(next.value),
+      done: !!next.done,
+    }));
+  } else if(msg.type === 'input-change') {
+    notifs.get(msg.id)?.(msg.value);
+  }
 };
 
 /**@license*/
 
 postMessage(JSON.stringify({
-    type: 'ready',
-    playlists: [...$$$map.keys()],
+  type: 'ready',
+  playlists: [...$$$map.keys()],
 }));

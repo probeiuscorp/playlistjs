@@ -11,41 +11,41 @@ export type FilesOpenProps = {
 }
 
 export function FilesOpen({ }: FilesOpenProps) {
-    const [open, setOpen] = useAtom(workspace.open);
+  const [open, setOpen] = useAtom(workspace.open);
 
-    const handleDragEnd: OnDragEndResponder = ({ source, destination }) => {
-        if(destination) {
-            setOpen(produce(open, open => {
-                const [reorderedItem] = open.splice(source.index, 1);
-                open.splice(destination.index, 0, reorderedItem);
-            }));
-        }
-    };
+  const handleDragEnd: OnDragEndResponder = ({ source, destination }) => {
+    if(destination) {
+      setOpen(produce(open, open => {
+        const [reorderedItem] = open.splice(source.index, 1);
+        open.splice(destination.index, 0, reorderedItem);
+      }));
+    }
+  };
 
-    return (
-        <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="open" direction="horizontal">
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="open" direction="horizontal">
+        {provided => (
+          <div
+            className={styles.container}
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            {open.map((id, i) => (
+              <Draggable index={i} draggableId={id} key={id}>
                 {provided => (
-                    <div
-                        className={styles.container}
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                    >
-                        {open.map((id, i) => (
-                            <Draggable index={i} draggableId={id} key={id}>
-                                {provided => (
-                                    <FileOpenFile
-                                        id={id}
-                                        handle={provided.dragHandleProps}
-                                        props={{ ref: provided.innerRef, ...provided.draggableProps }}
-                                    />
-                                )}
-                            </Draggable>
-                        ))}
-                        {provided.placeholder}
-                    </div>
+                  <FileOpenFile
+                    id={id}
+                    handle={provided.dragHandleProps}
+                    props={{ ref: provided.innerRef, ...provided.draggableProps }}
+                  />
                 )}
-            </Droppable>
-        </DragDropContext>
-    );
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  );
 }

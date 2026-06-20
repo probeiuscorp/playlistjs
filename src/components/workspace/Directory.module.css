@@ -1,25 +1,25 @@
 .wrapper {
-    grid-area: directory;
-    background-color: var(--background-root);
-    border-right: 1px solid var(--outline-dimmer);
+  grid-area: directory;
+  background-color: var(--background-root);
+  border-right: 1px solid var(--outline-dimmer);
 }
 
 .actions {
-    margin: 0 8px;
-    margin-top: 5px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid var(--outline-dimmer);
+  margin: 0 8px;
+  margin-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--outline-dimmer);
 
-    display: flex;
-    justify-content: flex-end;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .actionsSpacer {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    padding: 0.5em;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em;
 }

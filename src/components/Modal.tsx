@@ -9,71 +9,71 @@ import styles from './Modal.module.css';
 export const MODAL_ANIMATE_OUT_TIME = 120;
 
 export type ModalProps = {
-    tabIndex?: number
-    onClose(): void
+  tabIndex?: number
+  onClose(): void
 };
 export function Modal({ children, tabIndex, onClose }: React.PropsWithChildren<ModalProps>) {
-    useEffect(() => createEventListener('keyup', (e) => {
-        if(e.key === 'Escape') {
-            onClose();
-        }
-    }), []);
-    
-    const [status, setStatus] = useState<'opening' | 'opened' | 'closing'>('opening');
-    useEffect(() => {
-        setStatus('opened');
-    }, []);
+  useEffect(() => createEventListener('keyup', (e) => {
+    if(e.key === 'Escape') {
+      onClose();
+    }
+  }), []);
 
-    const modal = useModal();
+  const [status, setStatus] = useState<'opening' | 'opened' | 'closing'>('opening');
+  useEffect(() => {
+    setStatus('opened');
+  }, []);
 
-    const animationStyle = status === 'opening'
-        ? false
-        : modal.visible === false
-            ? styles.closing
-            : styles.open;
+  const modal = useModal();
 
-    return (
-        <React.Fragment>
-            <div className={merge(styles.background, animationStyle)} onClick={onClose}/>
-            <aside
-                className={merge(styles.modal, animationStyle)}
-                tabIndex={tabIndex}
-            >
-                {children}
-            </aside>
-        </React.Fragment>
-    );
+  const animationStyle = status === 'opening'
+    ? false
+    : modal.visible === false
+      ? styles.closing
+      : styles.open;
+
+  return (
+    <React.Fragment>
+      <div className={merge(styles.background, animationStyle)} onClick={onClose}/>
+      <aside
+        className={merge(styles.modal, animationStyle)}
+        tabIndex={tabIndex}
+      >
+        {children}
+      </aside>
+    </React.Fragment>
+  );
 }
 
 export type ModalContentProps = {
-    // pass
+  // pass
 };
 Modal.Content = function ModalContent({ children }: React.PropsWithChildren<ModalContentProps>) {
-    return (
-        <div className={styles.content}>
-            {children}
-        </div>
-    );
+  return (
+    <div className={styles.content}>
+      {children}
+    </div>
+  );
 };
 
 export type ModalButtonsProps = {
-    // pass
+  // pass
 };
 Modal.Buttons = function ModalButtons({ children }: React.PropsWithChildren<ModalButtonsProps>) {
-    return (
-        <div className={styles.buttons}>
-            {children}
-        </div>
-    );
+  return (
+    <div className={styles.buttons}>
+      {children}
+    </div>
+  );
 };
 
 export type ModalTitleProps = {
-    // pass
+  // pass
 };
 Modal.Title = function ModalTitle({ children }: React.PropsWithChildren<ModalTitleProps>) {
-    return (
-        <div className={styles.title}>
-            {children}
-        </div>
-    );
+  return (
+    <div className={styles.title}>
+      {children}
+    </div>
+  );
 };

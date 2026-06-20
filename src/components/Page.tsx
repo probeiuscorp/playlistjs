@@ -10,17 +10,17 @@ export type PageProps = React.PropsWithChildren<{
     title?: string
 }>;
 export function Page({ className, store, title = 'Playlist.js', children }: PageProps) {
-    return (
-        <NiceModal.Provider>
-            <Provider store={store}>
-                <Head>
-                    <title>{title}</title>
-                </Head>
+  return (
+    <NiceModal.Provider>
+      <Provider store={store}>
+        <Head>
+          <title>{title}</title>
+        </Head>
 
-                <main className={className}>
-                    {children}
-                </main>
-            </Provider>
-        </NiceModal.Provider>
-    );
+        <main className={className}>
+          {children}
+        </main>
+      </Provider>
+    </NiceModal.Provider>
+  );
 }

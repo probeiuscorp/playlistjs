@@ -7,7 +7,7 @@
 
 /**
  * A chance of 0 never happens, a chance of 1 always happens.
- * 
+ *
  * @example
  * ```javascript
  * if(chance(0.5))
@@ -22,109 +22,109 @@ declare function chance(decimal: number): boolean;
 declare function silence(durationSeconds: number): song;
 
 type YouTubeVideo = {
-    id: string
-    start?: number
-    end?: number
+  id: string
+  start?: number
+  end?: number
 };
 type song = string | YouTubeVideo;
 declare function fromSongLike(songLike: song): song;
 
 type playlist = Iterable<song> | (() => Iterable<song>);
 declare const Playlist: {
-    eSwitch: Revent<undefined>
-    yield(playlist: playlist): void
-    yield(name: string, playlist: playlist): void
+  eSwitch: Revent<undefined>
+  yield(playlist: playlist): void
+  yield(name: string, playlist: playlist): void
 
-    readonly input: {
-        string(label: string, initial?: string): Behavior<string>
-        number(label: string, initial: number): Behavior<number>
-        slider(label: string, init?: number | {
-            min: number
-            max: number
-            initial: number
-            step?: number
-        }): Behavior<number>
-        boolean(label: string, initial?: boolean): Behavior<boolean>
-        select<T extends string>(label: string, options: [T, ...T[]], initial?: T): Behavior<T>
-        button(label: string): Revent<undefined>
-    }
+  readonly input: {
+    string(label: string, initial?: string): Behavior<string>
+    number(label: string, initial: number): Behavior<number>
+    slider(label: string, init?: number | {
+      min: number
+      max: number
+      initial: number
+      step?: number
+    }): Behavior<number>
+    boolean(label: string, initial?: boolean): Behavior<boolean>
+    select<T extends string>(label: string, options: [T, ...T[]], initial?: T): Behavior<T>
+    button(label: string): Revent<undefined>
+  }
 };
 
-interface Array<T> {
-    /**
-     * Pure Fisher-Yates Knuth shuffle (not in-place).
-     */
-    shuffle(): T[]
+type Array<T> = {
+  /**
+   * Pure Fisher-Yates Knuth shuffle (not in-place).
+   */
+  shuffle(): T[]
 
-    /**
-     * Splits the array at @param index, leaving the item at `index` in the second array.
-     * 
-     * @example
-     * ```javascript
-     * [0, 1, 2].split(1) // => [ [0], [1, 2] ]
-     * ```
-     */
-    split(index: number): [T[], T[]]
+  /**
+   * Splits the array at @param index, leaving the item at `index` in the second array.
+   *
+   * @example
+   * ```javascript
+   * [0, 1, 2].split(1) // => [ [0], [1, 2] ]
+   * ```
+   */
+  split(index: number): [T[], T[]]
 
-    /**
-     * Moves everything before @param index to the back of the array.
-     * 
-     * @example
-     * ```javascript
-     * [0,1,2,3].rehead(2) // => [2,3,0,1]
-     * ```
-     */
-    rehead(index: number): T[]
+  /**
+   * Moves everything before @param index to the back of the array.
+   *
+   * @example
+   * ```javascript
+   * [0,1,2,3].rehead(2) // => [2,3,0,1]
+   * ```
+   */
+  rehead(index: number): T[]
 
-    /**
-     * More useful `sort()`, enabling stuff like:
-     * 
-     * @example
-     * ```javascript
-     * // Shuffle array, but move each item no more than 2 spaces
-     * [0,1,2,3].mapsort(
-     *    (item, index) => index + Math.random(-1, 1),
-     *    (a, b) => a - b
-     * )
-     * ```
-     */
-    mapsort<TTransformed>(
-        map: (item: T, index: number, array: T[]) => TTransformed,
-        compare?: (a: TTransformed, b: TTransformed) => number | boolean,
-    ): T[]
+  /**
+   * More useful `sort()`, enabling stuff like:
+   *
+   * @example
+   * ```javascript
+   * // Shuffle array, but move each item no more than 2 spaces
+   * [0,1,2,3].mapsort(
+   *    (item, index) => index + Math.random(-1, 1),
+   *    (a, b) => a - b
+   * )
+   * ```
+   */
+  mapsort<TTransformed>(
+    map: (item: T, index: number, array: T[]) => TTransformed,
+    compare?: (a: TTransformed, b: TTransformed) => number | boolean,
+  ): T[]
 
-    /**
-     * Picks and returns @param n elements.
-     */
-    pick(map?: (item: T) => number): T | undefined
-    pick(n: number, map?: (item: T) => number): T[]
+  /**
+   * Picks and returns @param n elements.
+   */
+  pick(map?: (item: T) => number): T | undefined
+  pick(n: number, map?: (item: T) => number): T[]
 }
 
-interface Math {
-    random(max: number): number
-    random(min: number, max: number): number
+type Math = {
+  random(max: number): number
+  random(min: number, max: number): number
 }
 
-interface Map<K, V> {
-    toArray(): [K, V][]
+type Map<K, V> = {
+  toArray(): [K, V][]
 }
 
-interface Set<T> {
-    toArray(): T[]
+type Set<T> = {
+  toArray(): T[]
 }
 
-interface Revent<T> {
-    map: <U>(fn: (data: T) => U) => Revent<U>
-    on: (callback: (data: T) => void) => () => void
+type Revent<T> = {
+  map: <U>(fn: (data: T) => U) => Revent<U>
+  on: (callback: (data: T) => void) => () => void
 }
 declare const Revent: <T>(executor: (push: (data: T) => void) => void) => Revent<T>;
 
-interface Behavior<T> {
-    current: T
-    map: <U>(fn: (data: T) => U) => Behavior<U>
-    onChange: (callback: (data: T, unsub: () => void) => void) => () => void
-    onValue: (callback: (data: T, unsub: () => void) => void) => () => void
+type Behavior<T> = {
+  current: T
+  map: <U>(fn: (data: T) => U) => Behavior<U>
+  onChange: (callback: (data: T, unsub: () => void) => void) => () => void
+  onValue: (callback: (data: T, unsub: () => void) => void) => () => void
 }
 declare const Behavior: (<T>(initial: T, executor: (push: (data: T) => void) => void) => Behavior<T>) & {
-    join: <T>(bba: Behavior<Behavior<T>>) => Behavior<T>
+  join: <T>(bba: Behavior<Behavior<T>>) => Behavior<T>
 };

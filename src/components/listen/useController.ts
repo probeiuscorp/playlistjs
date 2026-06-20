@@ -4,81 +4,81 @@ import { Playable } from './Playable';
 import { invoke } from ':/util';
 
 export type ControllerStage =
-    | { type: 'spawning' }
-    | { type: 'pick' | 'picked'; playlists: (string | null)[] }
-    | { type: 'error'; reason: ControllerError }
+  | { type: 'spawning' }
+  | { type: 'pick' | 'picked'; playlists: (string | null)[] }
+  | { type: 'error'; reason: ControllerError }
 export type InputDesc = (
-    | { type: 'button' }
-    | { type: 'string'; initial: string }
-    | { type: 'number'; initial: number }
-    | { type: 'boolean'; initial: boolean }
-    | { type: 'select'; initial: string; options: string[] }
-    | { type: 'slider'; initial: number; min: number; max: number; step: number }
-    ) & { label: string; id: number }
+  | { type: 'button' }
+  | { type: 'string'; initial: string }
+  | { type: 'number'; initial: number }
+  | { type: 'boolean'; initial: boolean }
+  | { type: 'select'; initial: string; options: string[] }
+  | { type: 'slider'; initial: number; min: number; max: number; step: number }
+  ) & { label: string; id: number }
 export function useController(id: string) {
-    const [key, setKey] = useState(false);
-    const [song, setSong] = useState<Playable | undefined>(undefined);
-    const [next, setNext] = useState<Playable | undefined>(undefined);
-    const [inputs, setInputs] = useState<InputDesc[]>([]);
-    const [{ sendMessage }, setSendMessage] = useState<{ sendMessage: (message: ToWorkerMessage) => void }>({ sendMessage: () => undefined });
-    const [stage, setStage] = useState<ControllerStage>({ type: 'spawning' });
-    const controllerRef = useRef<Controller>();
+  const [key, setKey] = useState(false);
+  const [song, setSong] = useState<Playable | undefined>(undefined);
+  const [next, setNext] = useState<Playable | undefined>(undefined);
+  const [inputs, setInputs] = useState<InputDesc[]>([]);
+  const [{ sendMessage }, setSendMessage] = useState<{ sendMessage: (message: ToWorkerMessage) => void }>({ sendMessage: () => undefined });
+  const [stage, setStage] = useState<ControllerStage>({ type: 'spawning' });
+  const controllerRef = useRef<Controller>();
 
-    useEffect(() => {
-        let hasBeenCanceled = false;
-        const controller = controllerRef.current = createController(id);
-        setSendMessage({ sendMessage: controller.sendMessage });
-        const unsubs = [
-            controller.bInputs.onValue((buttons) => setInputs(buttons)),
-        ];
-        controller.getPlaylists().then((playlists): ControllerStage => ({
-            type: 'pick',
-            playlists,
-        }), (err): ControllerStage => ({
-            type: 'error',
-            reason: err as ControllerError,
-        })).then((stage) => {
-            if (!hasBeenCanceled) setStage(stage);
-        });
-        return () => {
-            hasBeenCanceled = true;
-            unsubs.forEach(invoke);
-            controller.close();
-        };
-    }, [id]);
-
-    return {
-        key,
-        song,
-        next,
-        stage,
-        inputs,
-        sendMessage,
-        async rejectNext() {
-            const next = await controllerRef.current!.pull();
-            setNext(next);
-        },
-        async cycle() {
-            setKey((key) => !key);
-            setSong(next);
-            const pulled = await controllerRef.current!.pull();
-            setNext(pulled);
-        },
-        async setPlaylist(playlist: string | null, playlists: (string | null)[]) {
-            controllerRef.current!.setPlaylist(playlist);
-            setStage({ type: 'picked', playlists });
-
-            const first = await controllerRef.current!.pull();
-            setSong(first);
-
-            const next = await controllerRef.current!.pull();
-            setNext(next);
-        },
-        async switchPlaylist(playlists: (string | null)[]) {
-            setStage({
-                type: 'pick',
-                playlists,
-            });
-        },
+  useEffect(() => {
+    let hasBeenCanceled = false;
+    const controller = controllerRef.current = createController(id);
+    setSendMessage({ sendMessage: controller.sendMessage });
+    const unsubs = [
+      controller.bInputs.onValue((buttons) => setInputs(buttons)),
+    ];
+    controller.getPlaylists().then((playlists): ControllerStage => ({
+      type: 'pick',
+      playlists,
+    }), (err): ControllerStage => ({
+      type: 'error',
+      reason: err as ControllerError,
+    })).then((stage) => {
+      if (!hasBeenCanceled) setStage(stage);
+    });
+    return () => {
+      hasBeenCanceled = true;
+      unsubs.forEach(invoke);
+      controller.close();
     };
+  }, [id]);
+
+  return {
+    key,
+    song,
+    next,
+    stage,
+    inputs,
+    sendMessage,
+    async rejectNext() {
+      const next = await controllerRef.current!.pull();
+      setNext(next);
+    },
+    async cycle() {
+      setKey((key) => !key);
+      setSong(next);
+      const pulled = await controllerRef.current!.pull();
+      setNext(pulled);
+    },
+    async setPlaylist(playlist: string | null, playlists: (string | null)[]) {
+      controllerRef.current!.setPlaylist(playlist);
+      setStage({ type: 'picked', playlists });
+
+      const first = await controllerRef.current!.pull();
+      setSong(first);
+
+      const next = await controllerRef.current!.pull();
+      setNext(next);
+    },
+    async switchPlaylist(playlists: (string | null)[]) {
+      setStage({
+        type: 'pick',
+        playlists,
+      });
+    },
+  };
 }

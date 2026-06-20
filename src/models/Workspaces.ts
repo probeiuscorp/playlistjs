@@ -5,71 +5,71 @@ import { nanoid } from 'nanoid';
 
 export type FileKind = 'file' | 'note';
 export type WorkspaceFile = {
-    id: string
-    kind: FileKind
-    path: string
-    content: string
-    isEntry: boolean
+  id: string
+  kind: FileKind
+  path: string
+  content: string
+  isEntry: boolean
 };
 export type WorkspaceDirectory = {
-    files: WorkspaceFile[]
-    openFiles: string[]
-    open?: string
+  files: WorkspaceFile[]
+  openFiles: string[]
+  open?: string
 };
 const workspaceVisibility = ['public', 'private'] as const;
 export type WorkspaceVisibility = (typeof workspaceVisibility)[number];
 export const isWorkspaceVisibility = (value: unknown): value is WorkspaceVisibility => workspaceVisibility.includes(value as WorkspaceVisibility);
 
 export type WorkspaceData = ({
-    id: string
-    name: string
-    visibility?: WorkspaceVisibility
+  id: string
+  name: string
+  visibility?: WorkspaceVisibility
 }) & ({
-    type: 'git'
-    repositoryUrl: string
+  type: 'git'
+  repositoryUrl: string
 } | {
-    type: 'hosted'
-    directory: WorkspaceDirectory
+  type: 'hosted'
+  directory: WorkspaceDirectory
 });
 export type WorkspaceDataHosted = WorkspaceData & { type: 'hosted' };
 export type Workspace = {
-    user: string
-    data: WorkspaceData
+  user: string
+  data: WorkspaceData
 };
 
 export const isWorkspaceDirectory = ajv.compile<WorkspaceDirectory>(schema.properties.directory);
 export const workspaces = collection<Workspace>('workspaces');
 
 export async function findWorkspaceById(id: string, user: string | null | undefined, access: 'readonly' | 'write' = 'write') {
-    if(access === 'write') {
-        if(user == null) return null;
-        return workspaces.findOne({
-            'data.id': id,
-            user,
-        });
+  if(access === 'write') {
+    if(user == null) return null;
+    return workspaces.findOne({
+      'data.id': id,
+      user,
+    });
+  } else {
+    if(user == null) {
+      return workspaces.findOne({
+        'data.id': id,
+        'data.visibility': 'public',
+      });
     } else {
-        if(user == null) {
-            return workspaces.findOne({
-                'data.id': id,
-                'data.visibility': 'public',
-            });
-        } else {
-            return workspaces.findOne({
-                'data.id': id,
-                $or: [{
-                    user,
-                }, {
-                    'data.visibility': 'public',
-                }],
-            });
-        }
+      return workspaces.findOne({
+        'data.id': id,
+        $or: [{
+          user,
+        }, {
+          'data.visibility': 'public',
+        }],
+      });
     }
+  }
 }
 
 export async function findWorkspacesByUser(user: string) {
-    return workspaces.find({
-        user,
-    }).toArray();
+  return workspaces.find({
+    user,
+  }).toArray();
 }
 
 const initialWorkspaceContent = `\
@@ -87,17 +87,17 @@ Playlist.yield('forever', function*() {
 });
 `;
 export function createWorkspaceDirectory(): WorkspaceDirectory {
-    const main = nanoid();
+  const main = nanoid();
 
-    return {
-        files: [{
-            id: main,
-            kind: 'file',
-            path: './main',
-            content: initialWorkspaceContent,
-            isEntry: true,
-        }],
-        open: main,
-        openFiles: [main],
-    };
+  return {
+    files: [{
+      id: main,
+      kind: 'file',
+      path: './main',
+      content: initialWorkspaceContent,
+      isEntry: true,
+    }],
+    open: main,
+    openFiles: [main],
+  };
 }

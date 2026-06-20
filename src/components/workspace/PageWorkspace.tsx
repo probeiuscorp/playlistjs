@@ -11,16 +11,16 @@ import { atom } from 'jotai';
 
 export const workspaceIdAtom = atom(null as any as string);
 export function PageWorkspace({ id, directory }: WorkspaceDataHosted) {
-    const store = useInitializedStore(store => {
-        store.set(workspaceIdAtom, id);
-        store.set(workspace.deserialize, directory);
-    }, [id, directory]);
+  const store = useInitializedStore(store => {
+    store.set(workspaceIdAtom, id);
+    store.set(workspace.deserialize, directory);
+  }, [id, directory]);
 
-    return (
-        <Page store={store} className={styles.app}>
-            <Directory/>
-            <FilesOpen/>
-            <FileEditor/>
-        </Page>
-    );
+  return (
+    <Page store={store} className={styles.app}>
+      <Directory/>
+      <FilesOpen/>
+      <FileEditor/>
+    </Page>
+  );
 }
