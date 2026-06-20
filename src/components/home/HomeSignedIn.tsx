@@ -59,15 +59,20 @@ export function HomeSignedIn({ user, initialWorkspaces }: HomeSignedInProps) {
 
   async function pickWorkspaceRepositoryUrl(id: string) {
     const workspace = workspaces?.find((testWorkspace) => testWorkspace.id === id);
-    const repositoryUrl = await Modals.open(ModalRepository, {
+    const result = await Modals.open(ModalRepository, {
       workspaceId: id,
-      currentURL: workspace?.type === 'git' ? workspace.repositoryUrl : undefined,
+      initialState: workspace?.type === 'git' ? workspace : undefined,
     });
-    if(!repositoryUrl) return;
-    modifyWorkspace(id, (workspace) => ({ ...workspace, type: 'git', repositoryUrl }));
+    if(!result) return;
+    modifyWorkspace(id, (workspace) => ({
+      ...workspace,
+      type: 'git',
+      repositoryUrl: result.repositoryUrl,
+      branch: result.branch,
+    }));
     await fetch(`/api/workspaces/${id}/set-repository-url`, {
       method: 'POST',
-      body: JSON.stringify(repositoryUrl),
+      body: JSON.stringify(result),
     });
   }
 

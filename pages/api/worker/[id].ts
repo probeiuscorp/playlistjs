@@ -24,7 +24,7 @@ const cloneRepository = httpFetchUsing(fetch);
 async function buildWorkspaceCode(workspace: Workspace) {
   const { data } = workspace;
   if(data.type === 'git') {
-    const ref = 'refs/heads/main';
+    const ref = `refs/heads/${data.branch ?? 'main'}`;
     const repository = data.repositoryUrl;
     const filesList = await shallowCloneRef(ref, {
       makeRequest: cloneRepository(repository),

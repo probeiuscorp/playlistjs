@@ -27,6 +27,7 @@ export type WorkspaceData = ({
 }) & ({
   type: 'git'
   repositoryUrl: string
+  branch?: string
 } | {
   type: 'hosted'
   directory: WorkspaceDirectory
