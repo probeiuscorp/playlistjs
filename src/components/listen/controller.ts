@@ -19,6 +19,7 @@ export type ExpectedWorkerMessage =
   | { type: 'song'; song: Playable }
   | { type: 'error'; reason: WorkspaceBuildFailure }
   | { type: 'input'; input: InputDesc }
+  | { type: 'status'; status: string | undefined }
 export type ToWorkerMessage =
   | { type: 'input-change'; id: number; value: number | boolean | string | undefined }
 
@@ -27,6 +28,7 @@ export function createController(id: string) {
   const worker = new Worker(`/api/worker/${id}`);
   const listeners = new Set<(song: Playable) => void>();
   const [bInputs, setInputs] = Behavior.exec<InputDesc[]>([]);
+  const [bStatus, setStatus] = Behavior.exec<string | undefined>(undefined);
 
   const pendingPlaylists = new Promise<(string | null)[]>((resolve, reject) => {
     worker.onmessage = (message) => {
@@ -42,6 +44,8 @@ export function createController(id: string) {
         reject({ type: 'expected', errors: msg.reason as WorkspaceBuildFailure } satisfies ControllerError);
       } else if (msg.type === 'input') {
         setInputs([...bInputs.current, msg.input]);
+      } else if (msg.type === 'status') {
+        setStatus(msg.status);
       }
     };
   });
@@ -63,6 +67,7 @@ export function createController(id: string) {
     }),
     close: () => worker.terminate(),
     bInputs,
+    bStatus,
     sendMessage: (message: ToWorkerMessage) => {
       worker.postMessage(JSON.stringify(message));
     },

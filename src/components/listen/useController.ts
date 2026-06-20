@@ -20,6 +20,7 @@ export function useController(id: string) {
   const [song, setSong] = useState<Playable | undefined>(undefined);
   const [next, setNext] = useState<Playable | undefined>(undefined);
   const [inputs, setInputs] = useState<InputDesc[]>([]);
+  const [status, setStatus] = useState<string | undefined>();
   const [{ sendMessage }, setSendMessage] = useState<{ sendMessage: (message: ToWorkerMessage) => void }>({ sendMessage: () => undefined });
   const [stage, setStage] = useState<ControllerStage>({ type: 'spawning' });
   const controllerRef = useRef<Controller>();
@@ -30,6 +31,7 @@ export function useController(id: string) {
     setSendMessage({ sendMessage: controller.sendMessage });
     const unsubs = [
       controller.bInputs.onValue((buttons) => setInputs(buttons)),
+      controller.bStatus.onValue((status) => setStatus(status)),
     ];
     controller.getPlaylists().then((playlists): ControllerStage => ({
       type: 'pick',
@@ -53,6 +55,7 @@ export function useController(id: string) {
     next,
     stage,
     inputs,
+    status,
     sendMessage,
     async rejectNext() {
       const next = await controllerRef.current!.pull();

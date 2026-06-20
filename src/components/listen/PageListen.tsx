@@ -3,7 +3,7 @@ import { Page } from '../Page';
 import { WorkspaceData } from ':/models/Workspaces';
 import { useController } from './useController';
 import { ListenListening } from './ListenListening';
-import { Button, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { PickPlaylist } from './PickPlaylist';
 import { ControllerError } from './controller';
 import { ListenInputs } from './ListenInputs';
@@ -49,7 +49,14 @@ export function PageListen({ id }: WorkspaceData) {
         {stage.type === 'spawning' ? (
           'Loading...'
         ) : (
-          <ListenInputs controller={controller} />
+          <>
+            {controller.status && (
+              <Box fontFamily="monospace" mt="-1em" mb="0.75em">
+                {controller.status}
+              </Box>
+            )}
+            <ListenInputs controller={controller} />
+          </>
         )}
         {stage.type === 'error' && (
           <LoadingError error={stage.reason}/>

@@ -56,6 +56,7 @@ function silence(duration) {
 /* shim: */
 globalThis.Playlist = {
   eSwitch: Revent(() => undefined),
+  setStatus: () => undefined,
   input: {
     button: () => Revent(() => undefined),
     string: (_, initial = '') => Behavior(initial, () => undefined),
@@ -99,8 +100,24 @@ const leveledInput = (type, defaultInitial) => (label, initial = defaultInitial)
   label,
   initial,
 }, (exec) => Behavior(initial, exec));
+let statusUnsub = undefined;
 const Playlist = {
   eSwitch,
+  setStatus: (bStatus) => {
+    statusUnsub?.();
+    if (bStatus) {
+      statusUnsub = bStatus?.onValue((status) => {
+        postMessage(JSON.stringify({
+          type: 'status',
+          status,
+        }));
+      });
+    } else {
+      postMessage(JSON.stringify({
+        type: 'status',
+      }));
+    }
+},
   input: {
     button: (label) => inputKind({ type: 'button', label }, Revent),
     string: leveledInput('string', ''),

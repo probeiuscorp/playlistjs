@@ -32,6 +32,7 @@ declare function fromSongLike(songLike: song): song;
 type playlist = Iterable<song> | (() => Iterable<song>);
 declare const Playlist: {
   eSwitch: Revent<undefined>
+  setStatus(bStatus: Behavior<string> | undefined): void
   yield(playlist: playlist): void
   yield(name: string, playlist: playlist): void
 
