@@ -2,8 +2,8 @@ import { AppProps } from 'next/app';
 import React from 'react';
 import { SessionProvider } from 'next-auth/react';
 import { ChakraProvider, extendTheme, type localStorageManager } from '@chakra-ui/react';
-import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/material.css';
+import 'tippy.js/dist/tippy.css';
 import 'tippy.js/animations/shift-away.css';
 import '../styles/globals.css';
 

@@ -15,5 +15,6 @@
     "files.associations": {
         "std.d.ts.txt": "typescript",
         "*.js.txt": "javascript"
-    }
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

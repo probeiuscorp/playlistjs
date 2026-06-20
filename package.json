@@ -72,7 +72,7 @@
     "mocha": "^10.2.0",
     "monaco-vscode-textmate-theme-converter": "^0.1.7",
     "tsx": "^3.12.7",
-    "typescript": "4.9.4",
+    "typescript": "^6.0.3",
     "uglify-js": "^3.17.4"
   }
 }
